@@ -4,6 +4,9 @@
 *.obj
 *.elf
 
+#waccos
+waccos.img
+
 # Precompiled Headers
 *.gch
 *.pch

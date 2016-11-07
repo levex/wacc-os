@@ -19,6 +19,8 @@ TARGET=waccos.img
 # kaboom
 
 SRCS=$(wildcard boot/*.S)
+SRCS+=$(wildcard drivers/*.S)
+SRCS+=$(wildcard util/*.S)
 
 OBJS=$(patsubst %.wacc,%.o,$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(SRCS))))
 WACC_AS=$(patsubst %.wacc,%.S,$(filter %.wacc,SRCS))

@@ -4,7 +4,7 @@
 *.obj
 *.elf
 
-#waccos
+# waccos
 waccos.img
 
 # Precompiled Headers
@@ -34,3 +34,11 @@ waccos.img
 # Debug files
 *.dSYM/
 *.su
+
+# vim
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+Session.vim
+.netrwhist
+*~
+tags

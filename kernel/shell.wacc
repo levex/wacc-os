@@ -2,7 +2,31 @@ begin
     #include "uart_w.wach"
 
     void run_shell() is
-        call uart_write_char('s') ;
-        call uart_write_string("shell")
+        while true do
+            call uart_write_string("waccOS % ") ;
+
+            char input = '\0' ;
+            int cmdLen = 0 ;
+
+            while input != '\r' do
+                input = call uart_get_char() ;
+
+                if input == '\r' then
+                    call uart_write_newline()
+                else if input == '\b' then
+                    if cmdLen != 0 then
+                        call uart_write_char('\b') ;
+                        call uart_write_char(' ') ;
+                        call uart_write_char('\b') ;
+                        cmdLen--
+                    else
+                        skip
+                    end
+                else
+                    call uart_write_char(input) ;
+                    cmdLen++
+                end end
+            end
+        end
     end
 end

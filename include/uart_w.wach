@@ -1,4 +1,6 @@
 #pragma once
 
+extern char uart_get_char();
 extern void uart_write_char(char c);
 extern void uart_write_string(string s);
+extern void uart_write_newline();

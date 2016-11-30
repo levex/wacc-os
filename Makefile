@@ -10,8 +10,8 @@ LDFLAGS=
 AS=$(TRIPLET)as
 ASFLAGS=
 
-WACC=./wacc
-WACCFLAGS=
+WACC=wacc-exe
+WACCFLAGS=-I include
 
 LNKSCR=linker.ld
 TARGET=waccos.img
@@ -21,6 +21,8 @@ TARGET=waccos.img
 SRCS=$(wildcard boot/*.S)
 SRCS+=$(wildcard drivers/*.S)
 SRCS+=$(wildcard util/*.S)
+SRCS+=$(wildcard drivers/*.wacc)
+SRCS+=$(wildcard kernel/*.wacc)
 
 OBJS=$(patsubst %.wacc,%.o,$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(SRCS))))
 WACC_AS=$(patsubst %.wacc,%.S,$(filter %.wacc,SRCS))

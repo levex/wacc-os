@@ -1,0 +1,15 @@
+begin
+    void uart_write_char(char c) is
+        begin inline
+            mov r0, r4 // only 1 local 'c' so lsra puts it in r4
+            bl uart_send_byte
+        end
+    end
+
+    void uart_write_string(string s) is
+        begin inline
+            add r0, r4, #4 // same as above; skip length before string
+            bl uart_send_string
+        end
+    end
+end

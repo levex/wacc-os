@@ -1,0 +1,8 @@
+begin
+    #include "uart_w.wach"
+
+    void run_shell() is
+        call uart_write_char('s') ;
+        call uart_write_string("shell")
+    end
+end

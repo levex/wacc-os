@@ -1,0 +1,4 @@
+#pragma once
+
+extern void bcm2835_timer_init();
+

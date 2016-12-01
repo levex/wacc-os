@@ -1,0 +1,48 @@
+## BCM 2835 system timer driver for waccOS
+
+begin
+#include "kernel.wach"
+#include "uart_w.wach"
+#include "mmio.wach"
+
+uint32* bcm2835_timer_base = 0x20003000
+
+void bcm2835_timer_init() is
+    uart_write_string("BCM2835 System timer driver initializing\n\r");
+end
+
+## control register
+
+uint32 bcm2835_timer_read_control() is
+    return mmio_read32(bcm2835_timer_base + 0x0);
+end
+
+## current value registers
+
+uint32 bcm2835_timer_read_lower() is
+    return mmio_read32(bcm2835_timer_base + 0x4);
+end
+
+uint32 bcm2835_timer_read_higher() is
+    return mmio_read32(bcm2835_timer_base + 0x8);
+end
+
+## compare registers
+
+uint32 bcm2835_timer_read_cmp0() is
+    return mmio_read32(bcm2835_timer_base + 0x8);
+end
+
+uint32 bcm2835_timer_read_cmp1() is
+    return mmio_read32(bcm2835_timer_base + 0x8);
+end
+
+uint32 bcm2835_timer_read_cmp2() is
+    return mmio_read32(bcm2835_timer_base + 0x8);
+end
+
+uint32 bcm2835_timer_read_cmp3() is
+    return mmio_read32(bcm2835_timer_base + 0x8);
+end
+
+end

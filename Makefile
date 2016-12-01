@@ -11,7 +11,7 @@ AS=$(TRIPLET)gcc
 ASFLAGS=-fPIC -mcpu=arm1176jzf-s -ffreestanding
 
 WACC=wacc-exe
-WACCFLAGS=-I include
+WACCFLAGS=-Iinclude -q
 
 OBJCOPY=$(TRIPLET)objcopy
 

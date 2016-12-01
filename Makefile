@@ -43,7 +43,7 @@ clean:
 
 $(TARGET): $(WACC_AS) $(OBJS)
 	@echo "  LD           $@"
-	@$(LD) $(LDFLAGS) -T $(LNKSCR) -o $(TARGET) $(OBJS)
+	@$(LD) $(LDFLAGS) -T $(LNKSCR) -o $(TARGET) $(OBJS) -lgcc
 
 $(RAW): $(TARGET)
 	@echo "  OBJCOPY      $@"

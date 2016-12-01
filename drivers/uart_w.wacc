@@ -2,23 +2,59 @@ begin
     char uart_get_char() is
         char c = '\0';
         begin inline
+            push {r0}
             bl uart_get_byte
             mov r4, r0
+            pop {r0}
         end
         return c;
     end
 
     void uart_write_char(char c) is
         begin inline
+            push {r0}
             mov r0, r4 // only 1 local 'c' so lsra puts it in r4
             bl uart_send_byte
+            pop {r0}
         end
     end
 
     void uart_write_string(string s) is
         begin inline
+            push {r0}
             mov r0, r4 // same as above
             bl uart_send_string
+            pop {r0}
+        end
+    end
+
+    void uart_write_int(int n) is
+        begin inline
+            push {r0, r1}
+            mov r0, r4
+            mov r1, #10
+            bl uart_send_int
+            pop {r0, r1}
+        end
+    end
+
+    void uart_write_int_hex(uint32 n) is
+        begin inline
+            push {r0, r1}
+            mov r0, r4
+            mov r1, #16
+            bl uart_send_int
+            pop {r0, r1}
+        end
+    end
+
+    void uart_write_int_bin(uint32 n) is
+        begin inline
+            push {r0, r1}
+            mov r0, r4
+            mov r1, #2
+            bl uart_send_int
+            pop {r0, r1}
         end
     end
 

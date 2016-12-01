@@ -180,9 +180,11 @@ uart_send_int:
 
     1:
         mov r0, r2      // move integer into r0
+        push {r1, r2, r3, r12}
         bl __aeabi_uidiv// r0 = integer / base
+        pop {r1, r2, r3, r12}
         mov r3, r0      // save this in r3
-        mul r0, r1, r3  
+        mul r0, r1, r3
         sub r0, r2, r0
         push {r0}
         add r4, #1

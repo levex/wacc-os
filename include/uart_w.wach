@@ -3,4 +3,7 @@
 extern char uart_get_char();
 extern void uart_write_char(char c);
 extern void uart_write_string(string s);
+extern void uart_write_int(int n);
+extern void uart_write_int_hex(uint32 n);
+extern void uart_write_int_bin(uint32 n);
 extern void uart_write_newline();

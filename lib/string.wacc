@@ -60,13 +60,9 @@ begin
 
             *dest = *src;
             if (*dest == '\0') then
+                memset(dest, '\0', n);
                 break;
             end
-        end
-
-        while (n > 0) do
-            n--;
-            *dest++ = '\0';
         end
 
         return s1;

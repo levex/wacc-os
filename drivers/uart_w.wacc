@@ -17,7 +17,7 @@ begin
 
     void uart_write_string(string s) is
         begin inline
-            add r0, r4, #4 // same as above; skip length before string
+            mov r0, r4 // same as above
             bl uart_send_string
         end
     end

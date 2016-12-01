@@ -7,13 +7,12 @@ begin
 
     void process_command(char *command) is
         if (strcmp(command, "ls") == 0) then
-            uart_write_string("filesystem not available");
-            uart_write_newline();
+            uart_write_string("filesystem not yet available");
         else
             uart_write_string("command not found: ");
             uart_write_string(command);
-            uart_write_newline();
         end
+        uart_write_newline();
     end
 
     void run_shell() is

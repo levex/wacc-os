@@ -1,31 +1,48 @@
 begin
     #include "uart_w.wach"
 
+    #include "string.wach"
+
+    extern char *buffer;
+
+    void process_command(char *command) is
+        if (strcmp(command, "ls") == 0) then
+            uart_write_string("filesystem not available");
+            uart_write_newline();
+        else
+            uart_write_string("command not found: ");
+            uart_write_string(command);
+            uart_write_newline();
+        end
+    end
 
     void run_shell() is
         while true do
-            call uart_write_string("waccOS % ");
+            uart_write_string("waccOS % ");
 
+            char *command = buffer;
             char input = '\0';
-            int cmdLen = 0;
 
-            while input != '\r' do
-                input = call uart_get_char();
+            while (input != '\r') do
+                input = uart_get_char();
 
-                if input == '\r' then
-                    call uart_write_newline();
-                else if input == '\b' then
-                    if cmdLen != 0 then
-                        call uart_write_char('\b');
-                        call uart_write_char(' ');
-                        call uart_write_char('\b');
-                        cmdLen--;
+                if (input == '\r') then
+                    *command = '\0';
+                    uart_write_newline();
+                else if (input == '\b') then
+                    if command != buffer then
+                        uart_write_char('\b');
+                        uart_write_char(' ');
+                        uart_write_char('\b');
+                        command--;
                     end
                 else
-                    call uart_write_char(input);
-                    cmdLen++;
+                    uart_write_char(input);
+                    *command++ = input;
                 end end
             end
+
+            process_command(buffer);
         end
     end
 end

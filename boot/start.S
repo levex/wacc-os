@@ -15,7 +15,7 @@ _start:
 	mov r0, #'c'
 	bl uart_send_byte
 
-	bl run_shell
+    bl kernel_main
 
 	bye:
 		b bye

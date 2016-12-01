@@ -5,7 +5,7 @@ begin
 #include "uart_w.wach"
 #include "mmio.wach"
 
-uint32* bcm2835_timer_base = 0x20003000
+uint32* bcm2835_timer_base = 0x20003000;
 
 void bcm2835_timer_init() is
     uart_write_string("BCM2835 System timer driver initializing\n\r");

@@ -17,7 +17,7 @@ begin
     end
 
     int strncmp(char *s1, char *s2, int n) is
-        if n == 0 then
+        if (n == 0) then
             return 0;
         end
 

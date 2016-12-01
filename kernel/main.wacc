@@ -4,11 +4,13 @@ begin
 
 #include "bcm2835_timer.wach"
 #include "uart_w.wach"
+#include "frame.wach"
 
 extern void run_shell();
 
 void kernel_main() is
     bcm2835_timer_init();
+    mm_init();
 
     uart_write_string("Running kernel debug shell...");
     uart_write_newline();

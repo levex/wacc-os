@@ -79,4 +79,10 @@ begin
         end
         return p - s;
     end
+
+    void memset(void *ptr, uint8 value, uint32 size) is
+        while (size-- != 0) do
+            *ptr++ = value;
+        end
+    end
 end

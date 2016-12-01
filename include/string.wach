@@ -5,3 +5,5 @@ extern int strncmp(char *s1, char *s2, int n);
 extern char *strcpy(char *dest, char *src);
 extern char *strncpy(char *dest, char *src, int n);
 extern int strlen(char *s);
+
+extern void memset(void *ptr, uint8 value, uint32 size);

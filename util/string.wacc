@@ -1,0 +1,82 @@
+begin
+    int strcmp(char *s1, char *s2) is
+        while (*s1 != '\0' && *s1 == *s2) do
+            s1++;
+            s2++;
+        end
+
+        uint8 u1 = *s1;
+        uint8 u2 = *s2;
+        if (u1 < u2) then
+            return -1;
+        else if (u1 > u2) then
+            return 1;
+        else
+            return 0;
+        end end
+    end
+
+    int strncmp(char *s1, char *s2, int n) is
+        if n == 0 then
+            return 0;
+        end
+
+        while (n-- != 0 && *s1 == *s2) do
+            if (n == 0 || *s1 == '\0') then
+                return 0;
+            end
+
+            s1++;
+            s2++;
+        end
+
+        uint8 u1 = *s1;
+        uint8 u2 = *s2;
+        if (u1 < u2) then
+            return -1;
+        else if (u1 > u2) then
+            return 1;
+        else
+            return 0;
+        end end
+    end
+
+    char *strcpy(char *dest, char *src) is
+        char *s1 = dest;
+        char c = *src;
+        while (c != '\0') do
+            *dest++ = *src++;
+            c = *src;
+        end
+
+        return s1;
+    end
+
+    char *strncpy(char *dest, char *src, int n) is
+        char *s1 = dest;
+
+        while (n > 0) do
+            n--;
+
+            *dest = *src;
+            if (*dest == '\0') then
+                break;
+            end
+        end
+
+        while (n > 0) do
+            n--;
+            *dest++ = '\0';
+        end
+
+        return s1;
+    end
+
+    int strlen(char *s) is
+        char *p = s;
+        while (*p != '\0') do
+            p++;
+        end
+        return p - s;
+    end
+end

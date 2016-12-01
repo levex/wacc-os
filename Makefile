@@ -26,6 +26,7 @@ SRCS+=$(wildcard drivers/*.S)
 SRCS+=$(wildcard util/*.S)
 SRCS+=$(wildcard drivers/*.wacc)
 SRCS+=$(wildcard kernel/*.wacc)
+SRCS+=$(wildcard util/*.wacc)
 
 OBJS=$(patsubst %.wacc,%.o,$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(SRCS))))
 WACC_AS=$(patsubst %.wacc,%.S,$(filter %.wacc,SRCS))

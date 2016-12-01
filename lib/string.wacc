@@ -76,9 +76,41 @@ begin
         return p - s;
     end
 
-    void memset(void *ptr, uint8 value, uint32 size) is
+    void *memcpy(void *dest, void *src, uint32 n) is
+        void *ret = dest;
+
+        while (n-- != 0) do
+            *dest++ = *src++;
+        end
+
+        return ret;
+    end
+
+    void *memmove(void *dest, void *src, uint32 n) is
+        void *ret = dest;
+
+        if (src < dest && dest < src + n) then
+            dest += n;
+            src += n;
+
+            while (n-- != 0) do
+                *(--dest) = *(--src);
+            end
+        else
+            while (n-- != 0) do
+                *dest++ = *src++;
+            end
+        end
+
+        return ret;
+    end
+
+
+    void *memset(void *ptr, uint8 value, uint32 size) is
+        void *ret = ptr;
         while (size-- != 0) do
             *ptr++ = value;
         end
+        return ret;
     end
 end

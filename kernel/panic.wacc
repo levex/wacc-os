@@ -1,0 +1,14 @@
+begin
+## code for panic in waccOS
+
+#include "uart_w.wach"
+
+    void panic(string msg) is
+        uart_write_string("*** Kernel panic: ");
+        uart_write_string(msg);
+        uart_write_newline();
+        while (true) do
+            skip;
+        end
+    end
+end

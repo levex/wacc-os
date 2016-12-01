@@ -1,18 +1,25 @@
 begin
-    #include "uart_w.wach"
-
-    #include "string.wach"
+#include "uart_w.wach"
+#include "kernel.wach"
+#include "string.wach"
 
     extern char *buffer;
 
     void process_command(char *command) is
         if (strcmp(command, "ls") == 0) then
             uart_write_string("filesystem not yet available");
+        else if (strcmp(command, "exit") == 0) then
+            panic("attempting to kill init");
+        else if (strlen(command) == 0) then
         else
             uart_write_string("command not found: ");
             uart_write_string(command);
-        end
-        uart_write_newline();
+        end end end
+
+        if (strlen(command) != 0) then
+            uart_write_newline();
+        else skip; end
+
     end
 
     void run_shell() is

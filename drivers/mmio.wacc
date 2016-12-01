@@ -1,0 +1,39 @@
+## MMIO related code for waccOS
+
+begin
+
+##  --- MMIO WRITES --
+
+    void mmio_write8(int port, uint8 data) is
+        uint8* loc = port;
+        *loc = data;
+    end
+
+    void mmio_write16(int port, uint16 data) is
+        uint16* loc = port;
+        *loc = data;
+    end
+
+    void mmio_write32(int port, uint32 data) is
+        uint32* loc = port;
+        *loc = data;
+    end
+
+##  --- MMIO READS --
+
+    uint8 mmio_read8(int port) is
+        uint8* loc = port;
+        return *loc;
+    end
+
+    uint16 mmio_read16(int port) is
+        uint16* loc = port;
+        return *loc;
+    end
+
+    uint32 mmio_read32(int port) is
+        uint32* loc = port;
+        return *loc;
+    end
+
+end

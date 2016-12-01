@@ -1,0 +1,6 @@
+#pragma once
+
+extern void mm_init();
+extern uint32 mm_alloc_pages(int n);
+extern uint32 mm_free_pages(void *p, int n);
+extern uint32 mm_mem_used();

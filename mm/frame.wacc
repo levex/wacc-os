@@ -1,0 +1,112 @@
+begin
+#include "kernel.wach"
+#include "string.wach"
+#include "uart_w.wach"
+
+#define INDEX_BIT(x) (x / 32)
+#define OFFSET_BIT(x) (x % 32)
+
+    extern uint32 nframes;
+    extern uint32 *frames;
+
+    ## set_frame writes a 1 into the corresponding bit
+    ## for the address a in the page map
+    void set_frame(uint32 a) is
+        int f = a / 0x1000;
+        int i = INDEX_BIT(f);
+        int o = OFFSET_BIT(f);
+        *(frames+i) |= (1 << o);
+    end
+
+    ## clear_frame writes a 0 into the corresponding bit
+    ## for the address a in the page map
+    void clear_frame(uint32 a) is
+        int f = a / 0x1000;
+        int i = INDEX_BIT(f);
+        int o = OFFSET_BIT(f);
+        *(frames+i) &= (~(1 << o));
+    end
+
+    ## test_frame returns the value of the corresponding bit
+    ## for the address a in the page map
+    int test_frame(uint32 a) is
+        int f = a / 0x1000;
+        int i = INDEX_BIT(f);
+        int o = OFFSET_BIT(f);
+        return (*(frames+i) & (1 << o));
+    end
+
+    bool check_n_frames_free(int start, int n) is
+        for (uint32 j = 0; j < n; j++) do
+            if (test_frame(start + 0x1000 * j) != 0) then
+                return false;
+            end
+        end
+        return true;
+    end
+
+    uint32 first_n_frames(uint32 n) is
+        for (uint32 i = 0; i < nframes * 0x1000; i += 0x1000) do
+            if (check_n_frames_free(i, n)) then
+                return i / 0x1000;
+            end
+        end
+        panic("no n free consecutive pages");
+        return 0xFFFFFFFF;
+    end
+
+    uint32 mm_alloc_pages(int n) is
+        uint32 addr = first_n_frames(n) * 0x1000;
+        for (uint32 i = addr; i < addr + n * 0x1000; i += 0x1000) do
+            if (test_frame(i) != 0) then
+                panic("first_n_frames is broken");
+            end
+            set_frame(i);
+        end
+        return addr;
+    end
+
+    uint32 mm_free_pages(void *p, int n) is
+        while (n-- != 0) do
+            uint32 t = p;
+            clear_frame(t * 0x1000);
+            p += 0x1000;
+        end
+        return 0;
+    end
+
+    uint32 first_frame() is
+        for (int i = 0; i < INDEX_BIT(nframes); i++) do
+            if (*(frames+i) != 0xFFFFFFFF) then
+                for (int j = 0; j < 32; j++) do
+                    uint32 test = 1 << j;
+                    if ((*(frames+i) & test) != 0) then
+                        return i * 0x20 + j;
+                    end
+                end
+            end
+        end
+
+        panic("Out of memory");
+
+        return 0xFFFFFFFF;
+    end
+
+    uint32 mm_mem_used() is
+        uint32 ret = 0;
+        for (int i = 0; i < INDEX_BIT(nframes); i++) do
+            for (int j = 0; j < 32; j++) do
+                int t = 1 << j;
+                if ((*(frames+i) & t) != 0) then
+                    ret++;
+                end
+            end
+        end
+        return ret * 4;
+    end
+
+    void mm_init() is
+        uart_write_string("Memory manager initializing...");
+        memset(frames, 0, 8192);
+    end
+end

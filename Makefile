@@ -24,10 +24,12 @@ RAW=waccos.img
 SRCS=$(wildcard boot/*.S)
 SRCS+=$(wildcard drivers/*.S)
 SRCS+=$(wildcard kernel/*.S)
+SRCS+=$(wildcard mm/*.S)
 SRCS+=$(wildcard util/*.S)
 SRCS+=$(wildcard drivers/*.wacc)
 SRCS+=$(wildcard kernel/*.wacc)
 SRCS+=$(wildcard lib/*.wacc)
+SRCS+=$(wildcard mm/*.wacc)
 SRCS+=$(wildcard util/*.wacc)
 
 OBJS=$(patsubst %.wacc,%.o,$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(SRCS))))

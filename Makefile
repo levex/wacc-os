@@ -5,7 +5,7 @@ CC=$(TRIPLET)gcc
 CFLAGS=-ffreestanding -nostdlib -nostartfiles
 
 LD=$(TRIPLET)gcc
-LDFLAGS=-ffreestanding -nostdlib
+LDFLAGS=-ffreestanding -nostdlib -nostartfiles
 
 AS=$(TRIPLET)gcc
 ASFLAGS=-fPIC -mcpu=arm1176jzf-s -ffreestanding
@@ -31,6 +31,8 @@ SRCS+=$(wildcard util/*.wacc)
 
 OBJS=$(patsubst %.wacc,%.o,$(patsubst %.c,%.o,$(patsubst %.S,%.o,$(SRCS))))
 WACC_AS=$(patsubst %.wacc,%.S,$(filter %.wacc,SRCS))
+
+.SUFFIXES:
 
 all: $(RAW)
 

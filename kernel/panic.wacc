@@ -5,8 +5,7 @@ begin
 
     void panic(string msg) is
         uart_write_string("*** Kernel panic: ");
-        uart_write_string(msg);
-        uart_write_newline();
+        uart_write_stringN(msg);
         while (true) do
             skip;
         end

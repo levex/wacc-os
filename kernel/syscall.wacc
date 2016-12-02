@@ -4,8 +4,7 @@ begin
 
 void syscall_hub(uint32 code) is
     uart_write_string("syscall: ");
-    uart_write_int(code);
-    uart_write_newline();
+    uart_write_intN(code);
 end
 
 end

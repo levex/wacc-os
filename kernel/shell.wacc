@@ -20,7 +20,7 @@ begin
             uint32 m = mm_mem_used();
             uart_write_string("Memory used: ");
             uart_write_int(m * 4096);
-            uart_write_stringN(" bytes");
+            uart_write_string(" bytes");
         else if (strlen(command) == 0) then
         else
             uart_write_string("command not found: ");

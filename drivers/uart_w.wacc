@@ -63,4 +63,15 @@ begin
             bl uart_send_newline
         end
     end
+
+
+void uart_write_stringN(string s) is
+    uart_write_string(s); uart_write_newline(); end
+void uart_write_int_hexN(int s) is
+    uart_write_int_hex(s); uart_write_newline(); end
+void uart_write_int_binN(int s) is
+    uart_write_int_bin(s); uart_write_newline(); end
+void uart_write_intN(int s) is
+    uart_write_int(s); uart_write_newline(); end
+
 end

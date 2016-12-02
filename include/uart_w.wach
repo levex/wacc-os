@@ -6,4 +6,10 @@ extern void uart_write_string(string s);
 extern void uart_write_int(int n);
 extern void uart_write_int_hex(uint32 n);
 extern void uart_write_int_bin(uint32 n);
+
+extern void uart_write_stringN(string s);
+extern void uart_write_intN(int n);
+extern void uart_write_int_hexN(uint32 n);
+extern void uart_write_int_binN(uint32 n);
+
 extern void uart_write_newline();

@@ -10,11 +10,16 @@ begin
             uart_write_string("filesystem not yet available");
         else if (strcmp(command, "exit") == 0) then
             panic("attempting to kill init");
+        else if (strcmp(command, "swi") == 0) then
+            begin inline
+                mov r7, #42
+                swi 0
+            end
         else if (strlen(command) == 0) then
         else
             uart_write_string("command not found: ");
             uart_write_string(command);
-        end end end
+        end end end end
 
         if (strlen(command) != 0) then
             uart_write_newline();

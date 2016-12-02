@@ -23,6 +23,7 @@ RAW=waccos.img
 
 SRCS=$(wildcard boot/*.S)
 SRCS+=$(wildcard drivers/*.S)
+SRCS+=$(wildcard arch/*.S)
 SRCS+=$(wildcard kernel/*.S)
 SRCS+=$(wildcard mm/*.S)
 SRCS+=$(wildcard util/*.S)

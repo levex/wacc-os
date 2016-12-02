@@ -1,0 +1,11 @@
+begin
+
+#include "uart_w.wach"
+
+void syscall_hub(uint32 code) is
+    uart_write_string("syscall: ");
+    uart_write_int(code);
+    uart_write_newline();
+end
+
+end

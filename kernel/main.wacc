@@ -7,10 +7,12 @@ begin
 #include "frame.wach"
 
 extern void run_shell();
+extern void ivt_init();
 
 void kernel_main() is
     bcm2835_timer_init();
     mm_init();
+    ivt_init();
 
     uart_write_string("Running kernel debug shell...");
     uart_write_newline();

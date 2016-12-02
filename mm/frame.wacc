@@ -106,7 +106,7 @@ begin
     end
 
     void mm_init() is
-        uart_write_string("Memory manager initializing...");
+        uart_write_stringN("Memory manager initializing...");
         memset(frames, 0, 8192);
     end
 end

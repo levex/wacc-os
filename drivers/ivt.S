@@ -5,7 +5,7 @@ fault_reset_str: .asciz "Reset fault happened\n"
 .balign 16
 fault_undefined_str: .asciz "Undefined isntructionfault happened\n"
 .balign 16
-fault_swi_str: .asciz "SWI fault happened\n"
+fault_swi_str: .asciz "SWI fault happened\n\r"
 .balign 16
 fault_prefetch_abort_str: .asciz "Prefetch abort fault happened\n"
 .balign 16

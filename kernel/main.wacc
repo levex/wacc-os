@@ -14,8 +14,7 @@ void kernel_main() is
     mm_init();
     ivt_init();
 
-    uart_write_string("Running kernel debug shell...");
-    uart_write_newline();
+    uart_write_stringN("Running kernel debug shell...");
 
     run_shell();
 end

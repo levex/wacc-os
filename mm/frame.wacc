@@ -102,11 +102,23 @@ begin
                 end
             end
         end
-        return ret * 4;
+        return ret;
     end
+
+    ## defined by the linker script
+    extern uint32 _text_start;
+    extern uint32 _text_end;
+    extern uint32 _data_start;
+    extern uint32 _data_end;
 
     void mm_init() is
         uart_write_stringN("Memory manager initializing...");
         memset(frames, 0, 8192);
+        for (int i = &_text_start; i < &_text_end; i += 0x1000) do
+            set_frame(i);
+        end
+        for (int i = &_data_start; i < &_data_end; i += 0x1000) do
+            set_frame(i);
+        end
     end
 end

@@ -1,0 +1,12 @@
+#pragma once
+
+#define __enable_irq() \
+    begin inline       \
+        cpsie i        \
+    end                \
+
+#define __disable_irq() \
+    begin inline        \
+        cpsid i
+    end                 \
+

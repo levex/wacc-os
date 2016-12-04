@@ -29,7 +29,7 @@ begin
 
         if (strlen(command) != 0) then
             uart_write_newline();
-        else skip; end
+        end
 
     end
 

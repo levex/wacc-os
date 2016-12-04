@@ -1,0 +1,4 @@
+#pragma once
+
+extern void *kmalloc(uint32 size);
+extern void kfree(void *ptr);

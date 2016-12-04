@@ -1,0 +1,10 @@
+#pragma once
+
+#define INLINE(i)               \
+        begin inline            \
+            i                   \
+        end
+#define FIXUP_LITERAL_POOL()    \
+        INLINE(b 1f)            \
+        INLINE(.ltorg)          \
+        INLINE(1:)              \

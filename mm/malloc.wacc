@@ -95,8 +95,6 @@ struct liballoc_major *allocate_new_page(uint32 size) is
         return null;
     end
 
-    FIXUP_LITERAL_POOL()
-
     maj.prev   = null;
     maj.next   = null;
     maj.pages  = st;
@@ -268,8 +266,6 @@ void *kmalloc(uint32 size) is
             ##liballoc_unlock();        ## release the lock
             return get_minor_ptr(maj.first);
         end
-
-        FIXUP_LITERAL_POOL()
 
         ## CASE 4: There is enough space in this block. But is it contiguous?
         ## Looping within the block now...

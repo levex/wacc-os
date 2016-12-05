@@ -5,7 +5,7 @@ begin
 #include "frame.wach"
 #include "malloc.wach"
 
-    extern char *buffer;
+    char *buffer = null;
 
     void process_command(char *command) is
         if (strcmp(command, "ls") == 0) then
@@ -39,6 +39,8 @@ begin
     end
 
     void run_shell() is
+        buffer = kmalloc(4096);
+
         while true do
             uart_write_string("waccOS % ");
 

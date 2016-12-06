@@ -1,0 +1,51 @@
+## inode handling of ext2 for waccOS
+
+begin
+
+#include "ext2.wach"
+#include "uart_w.wach"
+#include "string.wach"
+
+extern int blocksize;
+extern struct ext2_superblock *sb;
+extern void ext2_read_block(void *buf, int bid);
+extern int inodes_per_block;
+extern int first_bgd;
+extern void* kmalloc(int sz);
+extern void kfree(void *p);
+
+void ext2_read_inode(void *buf, int inode) is
+    uint32 bg = (inode - 1) / (sb.inodes_in_blockgroup);
+
+    void* block_buffer = kmalloc(blocksize);
+    ext2_read_block(block_buffer, first_bgd);
+
+    struct ext2_block_group_desc *bgd = block_buffer;
+    for (int i = 0; i < bg; i ++) do
+        uint8 *ptr = bgd;
+        ptr += 32;
+        bgd = ptr;
+    end
+    ext2_read_inode_2(buf, inode, block_buffer, bgd);
+end
+
+void ext2_read_inode_2(void *buf, int inode, void *block_buffer,
+        struct ext2_block_group_desc *bgd) is
+
+    uint32 index = (inode - 1) % sb.inodes_in_blockgroup;
+    uint32 block = (index * 128) / blocksize;
+    ext2_read_block(block_buffer, bgd.block_of_inode_table + block);
+    struct ext2_inode* _inode = block_buffer;
+    index = index % inodes_per_block;
+    for (int j = 0; j < index; j++) do
+        uint8* ptr = _inode;
+        ptr += 128;
+        _inode = ptr;
+    end
+
+    memcpy(buf, _inode, 128);
+
+    kfree(block_buffer);
+end
+
+end

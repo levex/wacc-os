@@ -1,0 +1,123 @@
+#pragma once
+
+#define EXT2_SIGNATURE 0xEF53
+
+struct ext2_superblock is
+    uint32 inodes;
+    uint32 blocks;
+    uint32 reserved_for_root;
+    uint32 unallocatedblocks;
+    uint32 unallocatedinodes;
+    uint32 superblock_id;
+    uint32 blocksize_hint; ## shift by 1024 to the left
+    uint32 fragmentsize_hint; ## shift by 1024 to left
+    uint32 blocks_in_blockgroup;
+    uint32 frags_in_blockgroup;
+    uint32 inodes_in_blockgroup;
+    uint32 last_mount;
+    uint32 last_write;
+    uint16 mounts_since_last_check;
+    uint16 max_mounts_since_last_check;
+    uint16 ext2_sig; ## == EXT2_SIGNATURE
+    uint16 state;
+    uint16 op_on_err;
+    uint16 minor_version;
+    uint32 last_check;
+    uint32 max_time_in_checks;
+    uint32 os_id;
+    uint32 major_version;
+    uint16 uuid;
+    uint16 gid;
+    uint8 unused;
+end
+
+#define ADVANCE_SUPERBLOCK(sb) begin \
+            uint8* p = sb; \
+            p += 1024; \
+            sb = p; \
+        end
+
+struct ext2_block_group_desc is
+    uint32 block_of_block_usage_bitmap;
+    uint32 block_of_inode_usage_bitmap;
+    uint32 block_of_inode_table;
+    uint16 num_of_unalloc_block;
+    uint16 num_of_unalloc_inode;
+    uint16 num_of_dirs;
+    uint8 unused; ## there is 14 bytes here
+end
+
+
+#define INODE_TYPE_FIFO 0x1000
+#define INODE_TYPE_CHAR_DEV 0x2000
+#define INODE_TYPE_DIRECTORY 0x4000
+#define INODE_TYPE_BLOCK_DEV 0x6000
+#define INODE_TYPE_FILE 0x8000
+#define INODE_TYPE_SYMLINK 0xA000
+#define INODE_TYPE_SOCKET 0xC000
+struct ext2_inode is
+    uint16 type;
+    uint16 uid;
+    uint32 size;
+    uint32 last_access;
+    uint32 create_time;
+    uint32 last_modif;
+    uint32 delete_time;
+    uint16 gid;
+    uint16 hardlinks;
+    uint32 disk_sectors;
+    uint32 flags;
+    uint32 ossv1;
+    uint32 dbp1;
+    uint32 dbp2;
+    uint32 dbp3;
+    uint32 dbp4;
+    uint32 dbp5;
+    uint32 dbp6;
+    uint32 dbp7;
+    uint32 dbp8;
+    uint32 dbp9;
+    uint32 dbp10;
+    uint32 dbp11;
+    uint32 dbp12;
+    uint32 singly_block;
+    uint32 doubly_block;
+    uint32 triply_block;
+    uint32 gen_no;
+    uint32 reserved1;
+    uint32 reserved2;
+    uint32 fragment_block;
+    uint8 ossv2; ## THERE IS 12 of these
+end
+
+struct ext2_dir is
+    uint32 inode;
+    uint16 size;
+    uint8 namelength;
+    uint8 reserved;
+    ## name goes here
+end
+
+struct ext2_priv_data is
+    struct ext2_superblock *sb;
+    uint32 first_bgd;
+    uint32 number_of_bgs;
+    uint32 blocksize;
+    uint32 sectors_per_block;
+    uint32 inodes_per_block;
+end
+
+extern struct filesystem *ext2_mount(struct device *dev);
+extern struct file *ext2_open(struct filesystem *fs, char *p);
+
+## file
+## extern int ext2_find_file_inode(void *, char *);
+
+## directory
+## extern int ext2_read_directory(struct filesystem *, int, char *);
+
+## inode
+## extern int ext2_read_inode(struct filesystem *, struct ext2_inode *, int);
+
+## block
+## extern int ext2_read_block(struct filesystem *, void *, uint32_t);

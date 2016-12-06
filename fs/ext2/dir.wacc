@@ -1,0 +1,96 @@
+## directory traversal for ext2, for waccOS
+
+begin
+
+#include "string.wach"
+#include "uart_w.wach"
+#include "ext2.wach"
+#include "errno.wach"
+
+extern void ext2_read_inode(void *buf, int i);
+extern void* kmalloc(int sz);
+extern void kfree(void *p);
+extern int blocksize;
+extern void ext2_read_block(void *buf, int bid);
+
+char* ext2_dirent_get_name(struct ext2_dir *ent) is
+    char *buf = kmalloc(ent.namelength + 1);
+    uint8 *p = ent;
+    p = p + 8;
+    memcpy(buf, p, ent.namelength);
+    p = buf;
+    p = p + ent.namelength;
+    *p = 0;
+    return buf;
+end
+
+void ext2_dump_dirent(struct ext2_dir *ent) is
+    uart_write_string("dirent inode: ");
+    uart_write_intN(ent.inode);
+    uart_write_string("dirent size: ");
+    uart_write_intN(ent.size);
+    uart_write_string("dirent namelength: ");
+    uart_write_intN(ent.namelength);
+    char *buf = ext2_dirent_get_name(ent);
+    uart_write_string("dirent name: ");
+    uart_write_stringN(buf);
+    kfree(buf);
+end
+
+int ext2_read_directory_helper(struct ext2_dir *d, char *f) is
+    int r = 0;
+    while (r < blocksize) do
+
+        ext2_dump_dirent(d);
+
+        if (d.size == 0 || d.namelength == 0) then
+            return 0;
+        end
+
+        char* a = ext2_dirent_get_name(d);
+        if (strncmp(a, f, d.namelength) == 0) then
+            return d.inode;
+        end
+        r += d.size;
+        uint8 *p = d;
+        p = p + d.size;
+        d = p;
+    end
+    return 0;
+end
+
+int ext2_read_directory(int dino, char *f) is
+    ## read the directory inode in
+    struct ext2_inode *inode = kmalloc(128);
+    ext2_read_inode(inode, dino);
+
+    if (((inode.type) & 0x4000) == 0) then
+        return -ENOTDIR;
+    end
+
+    return ext2_read_directory_buf(inode, f);
+end
+
+int ext2_read_directory_buf(struct ext2_inode *inode, char *f) is
+    void *bbuf = kmalloc(blocksize);
+    uint8 *__i = inode;
+    __i += 40;
+    uint32 *__j = __i;
+    for (int i = 0; i < 12; i++) do
+        ext2_read_block(bbuf, *(__j + i));
+        struct ext2_dir *d = bbuf;
+        if (d.size == 0 || d.namelength == 0) then
+            kfree(bbuf);
+            return -ENOENT;
+        end
+        int r = ext2_read_directory_helper(d, f);
+        if (r > 0) then
+            kfree(bbuf);
+            return r;
+        end
+    end
+    kfree(bbuf);
+    return -ENOENT;
+end
+
+end

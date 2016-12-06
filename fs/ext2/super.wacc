@@ -1,0 +1,92 @@
+## superblock handling of ext2 for waccOS
+
+begin
+
+#include "ext2.wach"
+#include "kernel.wach"
+#include "uart_w.wach"
+#include "string.wach"
+
+extern uint32 ext2_disk_image;
+extern int ext2_read_directory(int dino, char *f);
+extern void ext2_read_inode(void *buf, int inode);
+
+extern void* kmalloc(int sz);
+extern char* strtok(char* b, char d);
+
+struct ext2_superblock *sb = NULL;
+
+int blocksize = 0;
+int inodes_per_block = 0;
+int sectors_per_block = 0;
+int number_of_block_groups = 0;
+int first_bgd = 0;
+
+void ext2_parse_superblock() is
+    sb = &ext2_disk_image + 1024;
+    int sig = sb.ext2_sig;
+    if (sig == 0xEF53) then
+        uart_write_stringN("ext2: found volume");
+    else
+        uart_write_int_hexN(sig);
+        panic("invalid volume");
+    end
+
+    blocksize = 1024 << sb.blocksize_hint;
+    uart_write_string("ext2: block size: ");
+    uart_write_intN(blocksize);
+
+    inodes_per_block = blocksize / 128;
+    sectors_per_block = blocksize / 512;
+
+    uart_write_string("ext2: inodes in a block: ");
+    uart_write_intN(inodes_per_block);
+    uart_write_string("ext2: sectors in a block: ");
+    uart_write_intN(sectors_per_block);
+
+    int fssize = blocksize * sb.blocks;
+    uart_write_string("ext2: size of filesystem: ");
+    uart_write_int(fssize);
+    uart_write_stringN(" bytes");
+
+    number_of_block_groups = sb.blocks / sb.blocks_in_blockgroup;
+    if (number_of_block_groups == 0) then
+        number_of_block_groups = 1;
+    else
+        skip;
+    end
+    uart_write_string("ext2: number of block groups: ");
+    uart_write_intN(number_of_block_groups);
+
+    first_bgd = sb.superblock_id + (1024 / blocksize);
+    uart_write_string("ext2: first block group descriptor at: ");
+    uart_write_intN(first_bgd);
+end
+
+void ext2_init() is
+    uart_write_stringN("ext2 driver online");
+
+    ext2_parse_superblock();
+
+    struct ext2_inode *buf = kmalloc(128);
+    ext2_read_inode(buf, 13);
+    uart_write_stringN("size of inode 13: ");
+    uart_write_intN(buf.size);
+
+    int etc_ino = 2;
+    etc_ino = ext2_read_directory(2, "etc");
+    uart_write_string("inode of etc: ");
+    uart_write_intN(etc_ino);
+
+    char *str = "/etc/release";
+    uart_write_int_hexN(str);
+    uart_write_string("TOKENIZING -------");
+    char *l = strtok(str, '/');
+    uart_write_stringN(l);
+
+   ##l = strtok(0, '/');
+   ##uart_write_stringN(l);
+
+end
+
+end

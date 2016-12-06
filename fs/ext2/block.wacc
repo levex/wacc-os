@@ -1,0 +1,13 @@
+## handling of block structures in ext2 for waccOS
+
+begin
+
+#include "string.wach"
+extern int blocksize;
+extern uint32 ext2_disk_image;
+
+void ext2_read_block(void *buf, int bid) is
+    memcpy(buf, (&ext2_disk_image) + bid * blocksize, blocksize);
+end
+
+end

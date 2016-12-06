@@ -32,6 +32,8 @@ extern char *ext2_read_file_full(char *path);
             end end
         else if (strcmp(command, "swi") == 0) then
             EMULATE_SYSCALL(42)
+        else if (strcmp(command, "sizeof") == 0) then
+            uart_write_int(sizeof(struct file));
         else if (strcmp(command, "mem") == 0) then
             uint32 m = mm_mem_used();
             uart_write_string("Memory used: ");
@@ -45,7 +47,7 @@ extern char *ext2_read_file_full(char *path);
         else
             uart_write_string("command not found: ");
             uart_write_string(command);
-        end end end end end end end end
+        end end end end end end end end end
 
         if (strlen(command) != 0) then
             uart_write_newline();

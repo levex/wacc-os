@@ -1,4 +1,7 @@
 begin
+
+#include "uart_w.wach"
+
     int strcmp(char *s1, char *s2) is
         while (*s1 != '\0' && *s1 == *s2) do
             s1++;

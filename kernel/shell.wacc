@@ -14,8 +14,10 @@ begin
             panic("attempting to kill init");
         else if (strcmp(command, "swi") == 0) then
             begin inline
+                push {r7}
                 mov r7, #42
                 swi 0
+                pop {r7}
             end
         else if (strcmp(command, "mem") == 0) then
             uint32 m = mm_mem_used();

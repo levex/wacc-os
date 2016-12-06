@@ -298,8 +298,6 @@ void *kmalloc(uint32 size) is
 end
 
 void kfree(void *ptr) is
-    struct liballoc_minor *min = null;
-    struct liballoc_major *maj = null;
 
     if (ptr == null) then
         panic("Attempt to free null pointer");
@@ -310,13 +308,13 @@ void kfree(void *ptr) is
 
     ##liballoc_lock();        ## lockit
 
-    min = ptr - sizeof(struct liballoc_minor);
+    struct liballoc_minor *min = ptr - sizeof(struct liballoc_minor);
 
     if (min.magic != LIBALLOC_MAGIC) then
         panic("invalid kfree");
     end
 
-    maj = min.block;
+    struct liballoc_major *maj = min.block;
 
     l_inuse -= min.size;
 

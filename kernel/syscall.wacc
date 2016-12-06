@@ -2,6 +2,9 @@ begin
 
 #include "uart_w.wach"
 #include "kernel.wach"
+#include "malloc.wach"
+#include "errno.wach"
+#include "string.wach"
 
 uint32 syscall_r0  = 0;  ## arg0 / return value
 uint32 syscall_r1  = 0;  ## arg1
@@ -42,6 +45,40 @@ void syscall_close() is
 	syscall_r0 = 0;
 end
 
+int sys_write(int fd, char *buf, int nbuf) is
+	if (fd != 1) then
+		return -EBADF;
+	end
+	if (buf == 0) then
+		return -EINVAL;
+	end
+	if (nbuf == 0) then
+		return 0;
+	end
+
+	char *kbuf = kmalloc(nbuf + 1);
+	memcpy(kbuf, buf, nbuf);
+	*(kbuf + nbuf) = 0;
+
+	if (fd == 1) then
+		## stdout
+		uart_write_string(kbuf);
+		## kfree(kbuf);
+		return nbuf;
+	else
+		panic("invalid write(2)");
+		return -1337;
+	end
+end
+
+void syscall_write() is
+	int fd = syscall_r0;
+	char *buf = syscall_r1;
+	int nbuf = syscall_r2;
+
+	syscall_r0 = sys_write(fd, buf, nbuf);
+end
+
 void syscall_unhandled(char *str) is
     uart_write_string("unknown/unimplemented system call: ");
     if (str != 0) then
@@ -54,42 +91,55 @@ end
 void syscall_hub(uint32 code) is
     if (code == 1) then
         syscall_exit();
+		return;
     end
     if (code == 2) then
         syscall_unhandled("fork");
+		return;
     end
     if (code == 3) then
         syscall_unhandled("read");
+		return;
     end
     if (code == 4) then
-        syscall_unhandled("write");
+        syscall_write();
+		return;
     end
     if (code == 5) then
         syscall_open();
+		return;
     end
     if (code == 6) then
         syscall_close();
+		return;
     end
     if (code == 11) then
         syscall_unhandled("execve");
+		return;
     end
     if (code == 18) then
         syscall_unhandled("stat");
+		return;
     end
     if (code == 19) then
         syscall_unhandled("lseek");
+		return;
     end
     if (code == 12) then
         syscall_unhandled("chdir");
+		return;
     end
     if (code == 20) then
         syscall_unhandled("getpid");
+		return;
     end
     if (code == 45) then
         syscall_unhandled("brk");
+		return;
     end
     if (code == 109) then
         syscall_unhandled("uname");
+		return;
     end
 
     syscall_unhandled(0);

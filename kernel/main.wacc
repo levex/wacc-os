@@ -23,12 +23,12 @@ void kernel_main() is
 
     ## drivers
     bcm2835_timer_init();
-    
+
     ## filesystems
     ext2_init();
 
-	## late_init infrastructure
-	fd_init();
+    ## late_init infrastructure
+    fd_init();
 
     uart_write_stringN("Running kernel debug shell...");
     set_current_pid(1);

@@ -11,33 +11,19 @@ begin
 #define ALIGN_INFO        sizeof(ALIGN_TYPE)*16
 
 ## This macro will conveniently align our pointer upwards
-#define ALIGN( ptr )                                                        \
+#define ALIGN(ptr)                                                          \
         if (ALIGNMENT > 1) then                                             \
-            ALIGN_TYPE *__aligned_p = ptr;                                  \
-            __aligned_p += ALIGN_INFO;                                      \
+            uint8 *__aligned_p = ptr;                                       \
             uint32 diff = __aligned_p & (ALIGNMENT-1);                      \
             if (diff != 0) then                                             \
                 diff = ALIGNMENT - diff;                                    \
                 __aligned_p += diff;                                        \
-            end                                                             \
-            *(__aligned_p - ALIGN_INFO) = diff + ALIGN_INFO;                \
-            ptr = __aligned_p;                                              \
-        end
-
-
-#define UNALIGN( ptr )                                                      \
-        if (ALIGNMENT > 1) then                                             \
-            ALIGN_TYPE *__aligned_p = ptr;                                  \
-            uint32 diff = *(__aligned_p - ALIGN_INFO);                      \
-            if (diff < (ALIGNMENT + ALIGN_INFO)) then                       \
-                __aligned_p -= diff;                                        \
             end                                                             \
             ptr = __aligned_p;                                              \
         end
 
 #define LIBALLOC_MAGIC    0xc001c0de
 #define LIBALLOC_DEAD     0xdeaddead
-
 
 ## A structure found at the top of all system allocated
 ## memory blocks. It details the usage of the memory block.
@@ -123,7 +109,6 @@ end
 void get_minor_ptr(struct liballoc_minor *min) is
     uint32 tmp = min;
     void *p = tmp + sizeof(struct liballoc_minor);
-    ALIGN(p)
     return p;
 end
 
@@ -138,11 +123,14 @@ struct liballoc_minor *find_contiguous_space(struct liballoc_major *maj, uint32 
             diff -= min;
             diff -= sizeof(struct liballoc_minor);
             diff -= min.size;
+            diff &= ~(ALIGNMENT - 1);
 
             if (diff >= (size + sizeof(struct liballoc_minor))) then
                 ## yay....
                 uint32 tmp = min;
-                tmp += sizeof(struct liballoc_minor) + min.size;
+                tmp += sizeof(struct liballoc_minor);
+                tmp += min.size;
+                ALIGN(tmp)
                 struct liballoc_minor *new_min = allocate_minor(maj, tmp, size);
 
                 min.next        = new_min;
@@ -154,15 +142,18 @@ struct liballoc_minor *find_contiguous_space(struct liballoc_major *maj, uint32 
         ## CASE 4.2: Is there space between two minors?
         else
             ## is the difference between here and next big enough?
-            uint32 diff  = min.next;
+            uint32 diff = min.next;
             diff -= min;
             diff -= sizeof(struct liballoc_minor);
             diff -= min.size; ## minus our existing usage.
+            diff &= ~(ALIGNMENT - 1);
 
             if (diff >= (size + sizeof(struct liballoc_minor))) then
                 ## yay......
                 uint32 tmp = min;
-                tmp += sizeof(struct liballoc_minor) + min.size;
+                tmp += sizeof(struct liballoc_minor);
+                tmp += min.size;
+                ALIGN(tmp)
                 struct liballoc_minor *new_min = allocate_minor(maj, tmp, size);
 
                 new_min.next        = min.next;
@@ -184,10 +175,6 @@ void *kmalloc(uint32 size) is
     if (size == 0) then
         panic("trying to allocate 0 bytes");
         return null;
-    end
-
-    if (ALIGNMENT > 1) then
-        size += ALIGNMENT + ALIGN_INFO;
     end
 
     if (l_memRoot == null) then
@@ -298,13 +285,10 @@ void *kmalloc(uint32 size) is
 end
 
 void kfree(void *ptr) is
-
     if (ptr == null) then
         panic("Attempt to free null pointer");
         return;
     end
-
-    UNALIGN(ptr)
 
     ##liballoc_lock();        ## lockit
 

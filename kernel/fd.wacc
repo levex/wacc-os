@@ -16,7 +16,7 @@ end
 struct fd_fp_store *store = null;
 
 void fd_init() is
-    uart_write_string("eabi: file descriptor init");
+    uart_write_stringN("eabi: file descriptor init");
     store = kmalloc(sizeof(struct fd_fp_store) * MAX_FDS);
     
     struct fd_fp_store *ptr = store;

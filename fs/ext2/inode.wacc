@@ -12,7 +12,6 @@ extern void ext2_read_block(void *buf, int bid);
 extern int inodes_per_block;
 extern int first_bgd;
 extern void* kmalloc(int sz);
-extern void kfree(void *p);
 
 void ext2_read_inode(void *buf, int inode) is
     uint32 bg = (inode - 1) / (sb.inodes_in_blockgroup);
@@ -44,8 +43,6 @@ void ext2_read_inode_2(void *buf, int inode, void *block_buffer,
     end
 
     memcpy(buf, _inode, 128);
-
-    kfree(block_buffer);
 end
 
 end

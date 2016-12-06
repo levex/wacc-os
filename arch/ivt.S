@@ -91,6 +91,31 @@ fault_swi:
     bl syscall_hub
     add sp, sp, #4
 
+    ldr r0, =syscall_r0
+    ldr r0, [r0]
+    ldr r1, =syscall_r1
+    ldr r1, [r1]
+    ldr r2, =syscall_r2
+    ldr r2, [r2]
+    ldr r3, =syscall_r3
+    ldr r3, [r3]
+    ldr r4, =syscall_r4
+    ldr r4, [r4]
+    ldr r5, =syscall_r5
+    ldr r5, [r5]
+    ldr r6, =syscall_r6
+    ldr r6, [r6]
+    ldr r7, =syscall_r7
+    ldr r7, [r7]
+    ldr r8, =syscall_r8
+    ldr r8, [r8]
+    ldr r9, =syscall_r9
+    ldr r9, [r9]
+    ldr r10, =syscall_r10
+    ldr r10, [r10]
+    ldr r11, =syscall_r11
+    ldr r11, [r11]
+
     pop {pc}
 
 fault_prefetch_abort:

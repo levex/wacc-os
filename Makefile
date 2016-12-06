@@ -1,5 +1,5 @@
 # waccOS central makefile, the great dispatch
-TRIPLET=arm-none-eabi-
+TRIPLET=/Users/daniel/Work/UNI/second_year/COMPILER/com/bin/arm-none-eabi-
 
 CC=$(TRIPLET)gcc
 CFLAGS=-ffreestanding -nostdlib -nostartfiles

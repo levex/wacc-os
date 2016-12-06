@@ -1,6 +1,7 @@
 begin
 #include "uart_w.wach"
 #include "kernel.wach"
+#include "atoi.wach"
 #include "string.wach"
 #include "frame.wach"
 #include "malloc.wach"

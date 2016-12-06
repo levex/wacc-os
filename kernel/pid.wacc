@@ -1,0 +1,13 @@
+begin
+
+int current_pid = 0;
+
+int getpid() is
+    return current_pid;
+end
+
+void set_current_pid(int pid) is
+    current_pid = pid;
+end
+
+end

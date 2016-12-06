@@ -1,10 +1,34 @@
 begin
 
-#include "uart_w.wach"
+    char* _buffer = 0;
+    char* strtok(char *str, char d) is
+        if (str != 0) then
+            _buffer = str;
+        end
 
-    ## not yet implemented
-    char *strtok(char *str, char delim) is
-        return str;
+        if(*(_buffer) == 0) then
+            return 0;
+        end
+    
+        char *ret = _buffer;
+    
+        char *b = _buffer;
+        for (int __j = 0; (*b) != 0; b++) do
+            if (*b == d) then
+                *b = 0;
+                _buffer = b + 1;
+
+                if(b == ret) then
+                    ret ++; 
+                else
+                    return ret;
+                end
+            end
+        end
+        
+        ## uncertainly (in)correct
+        _buffer = 0;
+        return ret;
     end
 
     int strcmp(char *s1, char *s2) is

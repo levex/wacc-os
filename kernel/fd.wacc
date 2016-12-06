@@ -18,7 +18,7 @@ struct fd_fp_store *store = null;
 void fd_init() is
     uart_write_stringN("eabi: file descriptor init");
     store = kmalloc(sizeof(struct fd_fp_store) * MAX_FDS);
-    
+
     struct fd_fp_store *ptr = store;
     for (int i = 1; i < MAX_FDS; i ++) do
         ptr.fd = i;
@@ -42,7 +42,7 @@ void remove_fd(int fd) is
     struct fd_fp_store *ptr = store;
     for (int i = 1; i < MAX_FDS; i ++) do
         if (ptr.fd == fd) then
-            ## kfree(ptr.fp);
+            kfree(ptr.fp);
             ptr.fp = 0;
             return;
         end

@@ -6,9 +6,9 @@ begin
 #include "uart_w.wach"
 #include "ext2.wach"
 #include "errno.wach"
+#include "malloc.wach"
 
 extern void ext2_read_inode(void *buf, int i);
-extern void* kmalloc(int sz);
 extern int blocksize;
 extern void ext2_read_block(void *buf, int bid);
 
@@ -33,7 +33,7 @@ void ext2_dump_dirent(struct ext2_dir *ent) is
     char *buf = ext2_dirent_get_name(ent);
     uart_write_string("dirent name: ");
     uart_write_stringN(buf);
-    ## kfree(buf);
+    kfree(buf);
 end
 
 int ext2_read_directory_helper(struct ext2_dir *d, char *f) is
@@ -77,16 +77,16 @@ int ext2_read_directory_buf(struct ext2_inode *inode, char *f) is
         ext2_read_block(bbuf, *(__j + i));
         struct ext2_dir *d = bbuf;
         if (d.size == 0 || d.namelength == 0) then
-            #### kfree(bbuf);
+            kfree(bbuf);
             return -ENOENT;
         end
         int r = ext2_read_directory_helper(d, f);
         if (r > 0) then
-            ## kfree(bbuf);
+            kfree(bbuf);
             return r;
         end
     end
-    ## kfree(bbuf);
+    kfree(bbuf);
     return -ENOENT;
 end
 

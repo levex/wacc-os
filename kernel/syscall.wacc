@@ -63,7 +63,7 @@ int sys_write(int fd, char *buf, int nbuf) is
 	if (fd == 1) then
 		## stdout
 		uart_write_string(kbuf);
-		## kfree(kbuf);
+		kfree(kbuf);
 		return nbuf;
 	else
 		panic("invalid write(2)");

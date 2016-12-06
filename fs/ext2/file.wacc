@@ -8,8 +8,8 @@ begin
 #include "errno.wach"
 #include "file.wach"
 #include "kernel.wach"
+#include "malloc.wach"
 
-extern void* kmalloc(int sz);
 extern int blocksize;
 extern char* strtok(char* str, char* delim);
 extern int ext2_read_directory(int dino, char *f);

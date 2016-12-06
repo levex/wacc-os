@@ -6,13 +6,13 @@ begin
 #include "kernel.wach"
 #include "uart_w.wach"
 #include "string.wach"
+#include "malloc.wach"
 
 extern uint32 ext2_disk_image;
 extern int ext2_read_directory(int dino, char *f);
 extern int ext2_find_file_inode(char *path);
 extern void ext2_read_inode(void *buf, int inode);
 
-extern void* kmalloc(int sz);
 extern char* strtok(char* b, char d);
 
 struct ext2_superblock *sb = null;

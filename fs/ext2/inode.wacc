@@ -28,7 +28,7 @@ bool __ext2_inode_is_dir(struct ext2_inode *ino) is
         ret = false;
     end
 
-    ## kfree(ino);
+    kfree(ino);
     return ret;
 end
 

@@ -22,11 +22,13 @@ fault_fiq_str: .asciz "FIQ fault happened\n"
 .balign 4
 undef_stack: .skip 4 * 32
 
+.balign 16
 fault_reset:
     ldr r0, =fault_reset_str
     bl uart_send_string
     1: b 1b
 
+.balign 16
 fault_undefined:
     ldr sp, =undef_stack
     push {lr}
@@ -37,6 +39,7 @@ fault_undefined:
     bl uart_send_int_hex
     1: b 1b
 
+.balign 16
 fault_swi:
     push {lr}
     push {r0}
@@ -75,29 +78,31 @@ fault_fiq:
 
 .globl ivt_init
 ivt_init:
+  push {r0-r7, r10, r11}
   ldr r10, =ivt_table_precopy
   ldr r11, =0x00000000
   ldmia r10!, {r0-r7}
   stmia r11!, {r0-r7}
   ldmia r10,  {r0-r7}
   stmia r11,  {r0-r7}
+  pop {r0-r7, r10, r11}
   mov pc, lr
 
 .balign 16
 ivt_table_precopy:
-  ldr pc, [pc, #0x18]
-  ldr pc, [pc, #0x18]
-  ldr pc, [pc, #0x18]
-  ldr pc, [pc, #0x18]
-  ldr pc, [pc, #0x18]
-  ldr pc, [pc, #0x18]
-  ldr pc, [pc, #0x18]
-  ldr pc, [pc, #0x18]
-  .word fault_reset
-  .word fault_undefined
-  .word fault_swi
-  .word fault_prefetch_abort
-  .word fault_data_abort
-  .word fault_reserved
-  .word fault_irq
-  .word fault_fiq
+  fa: ldr pc, [pc, #0x18]
+  fb1: ldr pc, [pc, #0x18]
+  fb2: ldr pc, [pc, #0x18]
+  fb3: ldr pc, [pc, #0x18]
+  fb4: ldr pc, [pc, #0x18]
+  fb5: ldr pc, [pc, #0x18]
+  fb6: ldr pc, [pc, #0x18]
+  fb7: ldr pc, [pc, #0x18]
+  f1: .word fault_reset
+  f2: .word fault_undefined
+  f3: .word fault_swi
+  f4: .word fault_prefetch_abort
+  f6: .word fault_data_abort
+  f7: .word fault_reserved
+  f8: .word fault_irq
+  f9: .word fault_fiq

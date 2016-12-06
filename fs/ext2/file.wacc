@@ -1,0 +1,35 @@
+## file handling of ext2 for waccOS
+
+begin
+
+#include "string.wach"
+#include "uart_w.wach"
+#include "errno.wach"
+
+extern void* kmalloc(int sz);
+extern char* strtok(char* str, char* delim);
+extern int ext2_read_directory(int dino, char *f);
+
+int ext2_find_file_inode(char *path) is
+    char *fn = kmalloc(strlen(path) + 1);
+
+    memcpy(fn, path, strlen(path) + 1);
+    *(fn + strlen(path)) = 0;
+
+    char* pch = strtok(fn, '/');
+    if (pch == 0) then
+        return 2; ## root directory
+    end
+
+    int ino = 2;
+    while (pch != 0) do
+        ino = ext2_read_directory(ino, pch);
+        if (ino < 0) then
+            return -ENOENT;
+        end
+        pch = strtok(0, '/');
+    end
+    return ino;
+end
+
+end

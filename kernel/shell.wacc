@@ -6,6 +6,7 @@ begin
 #include "malloc.wach"
 
 extern int ext2_find_file_inode(char *path);
+extern char *ext2_read_file_full(char *path);
 
     void process_command(char *command) is
         if (strcmp(command, "ls") == 0) then
@@ -16,6 +17,10 @@ extern int ext2_find_file_inode(char *path);
             char *arg = command + 6;
             int ino = ext2_find_file_inode(arg);
             uart_write_int(ino);
+        else if (strncmp(command, "cat ", 4) == 0) then
+            char *arg = command + 4;
+            char *ino = ext2_read_file_full(arg);
+            uart_write_string(ino);
         else if (strcmp(command, "swi") == 0) then
             begin inline
                 push {r7}
@@ -36,7 +41,7 @@ extern int ext2_find_file_inode(char *path);
         else
             uart_write_string("command not found: ");
             uart_write_string(command);
-        end end end end end end end
+        end end end end end end end end
 
         if (strlen(command) != 0) then
             uart_write_newline();

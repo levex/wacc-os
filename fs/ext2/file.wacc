@@ -4,11 +4,15 @@ begin
 
 #include "string.wach"
 #include "uart_w.wach"
+#include "ext2.wach"
 #include "errno.wach"
 
 extern void* kmalloc(int sz);
+extern int blocksize;
 extern char* strtok(char* str, char* delim);
 extern int ext2_read_directory(int dino, char *f);
+extern void ext2_read_inode(void *buf, int inode);
+extern void ext2_read_block(void *buf, int bid);
 
 int ext2_find_file_inode(char *path) is
     char *fn = kmalloc(strlen(path) + 1);
@@ -30,6 +34,21 @@ int ext2_find_file_inode(char *path) is
         pch = strtok(0, '/');
     end
     return ino;
+end
+
+char *ext2_read_file_full(char *path) is
+    int ino = ext2_find_file_inode(path);
+    struct ext2_inode *inode = kmalloc(128);
+    ext2_read_inode(inode, ino);
+
+    char *buf = kmalloc(inode.size);
+    char *block_buf = kmalloc(blocksize);
+    if (inode.dbp1 != 0) then
+        ext2_read_block(block_buf, inode.dbp1);
+        memcpy(buf, block_buf, blocksize);
+    end
+
+    return buf;
 end
 
 end

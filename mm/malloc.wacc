@@ -1,6 +1,6 @@
 begin
 
-### Adapted from liballoc code (https:##github.com/blanham/liballoc)
+### Adapted from liballoc code (https://github.com/blanham/liballoc)
 
 #include "frame.wach"
 #include "kernel.wach"

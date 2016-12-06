@@ -47,6 +47,61 @@ char *ext2_read_file_full(char *path) is
         ext2_read_block(block_buf, inode.dbp1);
         memcpy(buf, block_buf, blocksize);
     end
+    if (inode.dbp2 != 0) then
+        ext2_read_block(block_buf, inode.dbp2);
+        int offset = blocksize * 1;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.dbp3 != 0) then
+        ext2_read_block(block_buf, inode.dbp3);
+        int offset = blocksize * 2;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.dbp4 != 0) then
+        ext2_read_block(block_buf, inode.dbp4);
+        int offset = blocksize * 3;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.dbp5 != 0) then
+        ext2_read_block(block_buf, inode.dbp5);
+        int offset = blocksize * 4;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.dbp6 != 0) then
+        ext2_read_block(block_buf, inode.dbp6);
+        int offset = blocksize * 5;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.dbp7 != 0) then
+        ext2_read_block(block_buf, inode.dbp7);
+        int offset = blocksize * 6;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.dbp8 != 0) then
+        ext2_read_block(block_buf, inode.dbp8);
+        int offset = blocksize * 7;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.dbp9 != 0) then
+        ext2_read_block(block_buf, inode.dbp9);
+        int offset = blocksize * 8;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.dbp10 != 0) then
+        ext2_read_block(block_buf, inode.dbp10);
+        int offset = blocksize * 9;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.dbp11 != 0) then
+        ext2_read_block(block_buf, inode.dbp11);
+        int offset = blocksize * 10;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.dbp12 != 0) then
+        ext2_read_block(block_buf, inode.dbp12);
+        int offset = blocksize * 11;
+        memcpy(buf + offset, block_buf, blocksize);
+    end
 
     return buf;
 end

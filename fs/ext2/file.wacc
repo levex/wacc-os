@@ -6,6 +6,8 @@ begin
 #include "uart_w.wach"
 #include "ext2.wach"
 #include "errno.wach"
+#include "file.wach"
+#include "kernel.wach"
 
 extern void* kmalloc(int sz);
 extern int blocksize;
@@ -14,6 +16,33 @@ extern int ext2_read_directory(int dino, char *f);
 extern void ext2_read_inode(void *buf, int inode);
 extern bool ext2_inode_is_dir(int inode);
 extern void ext2_read_block(void *buf, int bid);
+
+int sys_ext2_open(char *path, int flags) is
+    ## for now, we only support O_RDONLY
+    if (flags != 0) then
+		return -EINVAL;
+	end
+
+    int inode = ext2_find_file_inode(path);
+    if (inode == -ENOENT) then
+        return -ENOENT;
+    end
+
+    struct file *fp = kmalloc(sizeof(struct file));
+
+    if (ext2_inode_is_dir(inode)) then
+        fp.isdir = true;
+    else
+        fp.isdir = false;
+    end
+    
+    fp.oflags = flags;
+    fp.path = path;
+    fp.inode = inode;
+    fp.size = -1;
+
+    return get_fd(fp);
+end
 
 int ext2_find_file_inode(char *path) is
     char *fn = kmalloc(strlen(path) + 1);

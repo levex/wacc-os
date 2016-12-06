@@ -1,0 +1,41 @@
+## file descriptor handling for waccOS
+begin
+
+#include "file.wach"
+#include "errno.wach"
+#include "uart_w.wach"
+#include "malloc.wach"
+
+#define MAX_FDS 128
+
+struct fd_fp_store is
+    int fd;
+    struct file *fp;
+end
+
+struct fd_fp_store *store = null;
+
+void fd_init() is
+    uart_write_string("eabi: file descriptor init");
+    store = kmalloc(sizeof(struct fd_fp_store) * MAX_FDS);
+    
+    struct fd_fp_store *ptr = store;
+    for (int i = 1; i < MAX_FDS; i ++) do
+        ptr.fd = i;
+        ptr.fp = 0;
+        ptr ++;
+    end
+end
+
+int get_fd(struct file *fp) is
+    struct fd_fp_store *ptr = store;
+    for (int i = 1; i < MAX_FDS; i ++) do
+        if (ptr.fp == 0) then
+            ptr.fp = fp;
+            return ptr.fd;
+        end
+    end
+    return -EMFILE;
+end
+
+end

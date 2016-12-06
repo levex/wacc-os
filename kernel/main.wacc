@@ -14,6 +14,7 @@ begin
 extern void run_shell();
 extern void ivt_init();
 extern void ext2_init();
+extern void fd_init();
 
 void kernel_main() is
     ## critical infrastructure
@@ -25,6 +26,9 @@ void kernel_main() is
     
     ## filesystems
     ext2_init();
+
+	## late_init infrastructure
+	fd_init();
 
     uart_write_stringN("Running kernel debug shell...");
     set_current_pid(1);

@@ -5,6 +5,8 @@ extern void panic(string str);
 extern int getpid();
 extern void set_current_pid(int p);
 
+extern int get_fd(struct file *fp);
+
 #define EMULATE_SYSCALL(id) begin inline \
                 push {r7}; \
                 mov r7, #id; \

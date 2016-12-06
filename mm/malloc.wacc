@@ -180,24 +180,7 @@ struct liballoc_minor *find_contiguous_space(struct liballoc_major *maj, uint32 
     return null;
 end
 
-extern uint32 _data_end;
-int base_malloc = 0;
-
 void *kmalloc(uint32 size) is
-    if (base_malloc == 0) then
-        base_malloc = &_data_end + 1024;
-        FIXUP_LITERAL_POOL()
-        ALIGN(base_malloc)
-    end
-
-    void *r = base_malloc;
-    ALIGN(r)
-    base_malloc = r;
-    base_malloc = base_malloc + size;
-    return r;
-end
-
-void *good_kmalloc(uint32 size) is
     if (size == 0) then
         panic("trying to allocate 0 bytes");
         return null;

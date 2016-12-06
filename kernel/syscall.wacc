@@ -1,10 +1,87 @@
 begin
 
 #include "uart_w.wach"
+#include "kernel.wach"
+
+uint32 syscall_r0  = 0;  ## arg0 / return value
+uint32 syscall_r1  = 0;  ## arg1
+uint32 syscall_r2  = 0;  ## arg2
+uint32 syscall_r3  = 0;  ## arg3
+uint32 syscall_r4  = 0;  ## arg4
+uint32 syscall_r5  = 0;
+uint32 syscall_r6  = 0;
+uint32 syscall_r7  = 0;  ## syscall no
+uint32 syscall_r8  = 0;
+uint32 syscall_r9  = 0;
+uint32 syscall_r10 = 0;
+uint32 syscall_r11 = 0;
+
+## we reserve r12 as a system call scratch register
+## return value is returned in r0
+
+void syscall_exit() is
+    int pid = getpid();
+
+    if (pid == 1) then
+        panic("attempting to kill init");
+    end
+
+    if (pid == 0) then
+        panic("kernel called exit system-call, this is brutal");
+    end
+end
+
+void syscall_unhandled(char *str) is
+    uart_write_string("unknown/unimplemented system call: ");
+    if (str != 0) then
+        uart_write_stringN(str);
+    else
+        uart_write_intN(syscall_r7);
+    end
+end
 
 void syscall_hub(uint32 code) is
-    uart_write_string("syscall: ");
-    uart_write_intN(code);
+    if (code == 1) then
+        syscall_exit();
+    end
+    if (code == 2) then
+        syscall_unhandled("fork");
+    end
+    if (code == 3) then
+        syscall_unhandled("read");
+    end
+    if (code == 4) then
+        syscall_unhandled("write");
+    end
+    if (code == 5) then
+        syscall_unhandled("open");
+    end
+    if (code == 6) then
+        syscall_unhandled("close");
+    end
+    if (code == 11) then
+        syscall_unhandled("execve");
+    end
+    if (code == 18) then
+        syscall_unhandled("stat");
+    end
+    if (code == 19) then
+        syscall_unhandled("lseek");
+    end
+    if (code == 12) then
+        syscall_unhandled("chdir");
+    end
+    if (code == 20) then
+        syscall_unhandled("getpid");
+    end
+    if (code == 45) then
+        syscall_unhandled("brk");
+    end
+    if (code == 109) then
+        syscall_unhandled("uname");
+    end
+
+    syscall_unhandled(0);
 end
 
 end

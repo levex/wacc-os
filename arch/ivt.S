@@ -42,13 +42,55 @@ fault_undefined:
 .balign 16
 fault_swi:
     push {lr}
-    push {r0}
-    ldr r0, =fault_swi_str
-    bl uart_send_string
-    pop {r0}
+
+    push {r11}
+
+
+    ldr r11, =syscall_r0
+    str r0, [r11]
+
+    ldr r11, =syscall_r1
+    str r1, [r11]
+
+    ldr r11, =syscall_r2
+    str r2, [r11]
+
+    ldr r11, =syscall_r3
+    str r3, [r11]
+
+    ldr r11, =syscall_r4
+    str r4, [r11]
+
+    ldr r11, =syscall_r5
+    str r5, [r11]
+
+    ldr r11, =syscall_r6
+    str r6, [r11]
+
+    ldr r11, =syscall_r7
+    str r7, [r11]
+
+    ldr r11, =syscall_r8
+    str r8, [r11]
+
+    ldr r11, =syscall_r9
+    str r9, [r11]
+
+    ldr r11, =syscall_r10
+    str r10, [r11]
+
+
+    pop {r11}
+
+    push {r10}
+    ldr r10, =syscall_r11
+    str r11, [r10]
+    pop {r10}
+
     push {r7}
     bl syscall_hub
     add sp, sp, #4
+
     pop {pc}
 
 fault_prefetch_abort:

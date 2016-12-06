@@ -4,6 +4,7 @@ begin
 
 #include "bcm2835_timer.wach"
 #include "uart_w.wach"
+#include "kernel.wach"
 #include "frame.wach"
 
 #define INLINE_CALL(f) begin inline \
@@ -26,6 +27,7 @@ void kernel_main() is
     ext2_init();
 
     uart_write_stringN("Running kernel debug shell...");
+    set_current_pid(1);
 
     run_shell();
 end

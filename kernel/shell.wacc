@@ -12,7 +12,7 @@ extern char *ext2_read_file_full(char *path);
         if (strcmp(command, "ls") == 0) then
             uart_write_string("filesystem not yet available");
         else if (strcmp(command, "exit") == 0) then
-            panic("attempting to kill init");
+            EMULATE_SYSCALL(1)
         else if (strncmp(command, "inode ", 6) == 0) then
             char *arg = command + 6;
             int ino = ext2_find_file_inode(arg);
@@ -22,12 +22,7 @@ extern char *ext2_read_file_full(char *path);
             char *ino = ext2_read_file_full(arg);
             uart_write_string(ino);
         else if (strcmp(command, "swi") == 0) then
-            begin inline
-                push {r7}
-                mov r7, #42
-                swi 0
-                pop {r7}
-            end
+            EMULATE_SYSCALL(42)
         else if (strcmp(command, "mem") == 0) then
             uint32 m = mm_mem_used();
             uart_write_string("Memory used: ");

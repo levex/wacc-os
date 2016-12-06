@@ -12,6 +12,7 @@ extern int blocksize;
 extern char* strtok(char* str, char* delim);
 extern int ext2_read_directory(int dino, char *f);
 extern void ext2_read_inode(void *buf, int inode);
+extern bool ext2_inode_is_dir(int inode);
 extern void ext2_read_block(void *buf, int bid);
 
 int ext2_find_file_inode(char *path) is
@@ -38,6 +39,12 @@ end
 
 char *ext2_read_file_full(char *path) is
     int ino = ext2_find_file_inode(path);
+    if (ino == -ENOENT) then
+        return -ENOENT;
+    end
+    if (ext2_inode_is_dir(ino)) then
+        return -EISDIR;
+    end
     struct ext2_inode *inode = kmalloc(128);
     ext2_read_inode(inode, ino);
 

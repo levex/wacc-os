@@ -2,6 +2,7 @@ begin
 #include "uart_w.wach"
 #include "kernel.wach"
 #include "atoi.wach"
+#include "errno.wach"
 #include "string.wach"
 #include "frame.wach"
 #include "malloc.wach"
@@ -21,7 +22,13 @@ extern char *ext2_read_file_full(char *path);
         else if (strncmp(command, "cat ", 4) == 0) then
             char *arg = command + 4;
             char *ino = ext2_read_file_full(arg);
-            uart_write_string(ino);
+            if (ino == -ENOENT) then
+                uart_write_string("File not found!");
+            else if (ino == -EISDIR) then
+                uart_write_string("Is a directory");
+            else
+                uart_write_string(ino);
+            end end
         else if (strcmp(command, "swi") == 0) then
             EMULATE_SYSCALL(42)
         else if (strcmp(command, "mem") == 0) then

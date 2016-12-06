@@ -5,13 +5,32 @@ begin
 #include "ext2.wach"
 #include "uart_w.wach"
 #include "string.wach"
+#include "malloc.wach"
 
 extern int blocksize;
 extern struct ext2_superblock *sb;
 extern void ext2_read_block(void *buf, int bid);
 extern int inodes_per_block;
 extern int first_bgd;
-extern void* kmalloc(int sz);
+
+bool ext2_inode_is_dir(int inode) is
+    struct ext2_inode *ino = kmalloc(128);
+    ext2_read_inode(ino, inode);
+    return __ext2_inode_is_dir(ino);
+end
+
+bool __ext2_inode_is_dir(struct ext2_inode *ino) is
+    bool ret = false;
+
+    if (((ino.type) & INODE_TYPE_DIRECTORY) != 0) then
+        ret = true;
+    else
+        ret = false;
+    end
+
+    ## kfree(ino);
+    return ret;
+end
 
 void ext2_read_inode(void *buf, int inode) is
     uint32 bg = (inode - 1) / (sb.inodes_in_blockgroup);

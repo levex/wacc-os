@@ -9,9 +9,9 @@ begin
         if(*(_buffer) == 0) then
             return 0;
         end
-    
+
         char *ret = _buffer;
-    
+
         char *b = _buffer;
         for (int __j = 0; (*b) != 0; b++) do
             if (*b == d) then
@@ -19,13 +19,13 @@ begin
                 _buffer = b + 1;
 
                 if(b == ret) then
-                    ret ++; 
+                    ret ++;
                 else
                     return ret;
                 end
             end
         end
-        
+
         ## uncertainly (in)correct
         _buffer = 0;
         return ret;

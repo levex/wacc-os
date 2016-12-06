@@ -86,6 +86,8 @@ void syscall_unhandled(char *str) is
     else
         uart_write_intN(syscall_r7);
     end
+
+    syscall_r0 = -ENOSYS;
 end
 
 void syscall_hub(uint32 code) is

@@ -40,8 +40,6 @@ int ext2_read_directory_helper(struct ext2_dir *d, char *f) is
     int r = 0;
     while (r < blocksize) do
 
-        ext2_dump_dirent(d);
-
         if (d.size == 0 || d.namelength == 0) then
             return 0;
         end

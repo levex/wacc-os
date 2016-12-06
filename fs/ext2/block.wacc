@@ -6,8 +6,14 @@ begin
 extern int blocksize;
 extern uint32 ext2_disk_image;
 
+void* advance_ptr(void *ptr, int val) is
+    uint8 *p = ptr;
+    p = p + val;
+    return p;
+end
+
 void ext2_read_block(void *buf, int bid) is
-    memcpy(buf, (&ext2_disk_image) + bid * blocksize, blocksize);
+    memcpy(buf, advance_ptr(&ext2_disk_image, bid * blocksize), blocksize);
 end
 
 end

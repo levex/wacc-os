@@ -18,14 +18,27 @@ void ext2_read_inode(void *buf, int inode) is
 
     void* block_buffer = kmalloc(blocksize);
     ext2_read_block(block_buffer, first_bgd);
+    return __ext2_read_inode(buf, block_buffer, bg, inode);
+end
 
+struct ext2_block_group_desc *advance_bgd(void *bgd) is
+    uint8 *p = bgd;
+    p = p + 32;
+    return p;
+end
+
+void __ext2_read_inode(void *buf, void *block_buffer, uint32 bg, int inode) is
     struct ext2_block_group_desc *bgd = block_buffer;
     for (int i = 0; i < bg; i ++) do
-        uint8 *ptr = bgd;
-        ptr += 32;
-        bgd = ptr;
+        bgd = advance_bgd(bgd);
     end
     ext2_read_inode_2(buf, inode, block_buffer, bgd);
+end
+
+void *advance_inode(void *inode) is
+    uint8* p = inode;
+    p = p + 128;
+    return p;
 end
 
 void ext2_read_inode_2(void *buf, int inode, void *block_buffer,
@@ -37,9 +50,7 @@ void ext2_read_inode_2(void *buf, int inode, void *block_buffer,
     struct ext2_inode* _inode = block_buffer;
     index = index % inodes_per_block;
     for (int j = 0; j < index; j++) do
-        uint8* ptr = _inode;
-        ptr += 128;
-        _inode = ptr;
+        _inode = advance_inode(_inode);
     end
 
     memcpy(buf, _inode, 128);

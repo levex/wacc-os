@@ -9,6 +9,7 @@ begin
 
 extern uint32 ext2_disk_image;
 extern int ext2_read_directory(int dino, char *f);
+extern int ext2_find_file_inode(char *path);
 extern void ext2_read_inode(void *buf, int inode);
 
 extern void* kmalloc(int sz);
@@ -23,7 +24,7 @@ int number_of_block_groups = 0;
 int first_bgd = 0;
 
 void ext2_parse_superblock() is
-    sb = &ext2_disk_image + 1024;
+    sb = &ext2_disk_image + 256;
     int sig = sb.ext2_sig;
     if (sig == 0xEF53) then
         uart_write_stringN("ext2: found volume");
@@ -70,7 +71,7 @@ void ext2_init() is
 
     struct ext2_inode *buf = kmalloc(128);
     ext2_read_inode(buf, 13);
-    uart_write_stringN("size of inode 13: ");
+    uart_write_string("size of inode 13: ");
     uart_write_intN(buf.size);
 
     int etc_ino = 2;
@@ -79,14 +80,12 @@ void ext2_init() is
     uart_write_intN(etc_ino);
 
     char *str = "/etc/release";
-    uart_write_int_hexN(str);
-    uart_write_string("TOKENIZING -------");
-    char *l = strtok(str, '/');
-    uart_write_stringN(l);
 
-   ##l = strtok(0, '/');
-   ##uart_write_stringN(l);
-
+    uart_write_string("search for inode of \"");
+    uart_write_string(str);
+    uart_write_string("\": ");
+    etc_ino = ext2_find_file_inode(str);
+    uart_write_intN(etc_ino);
 end
 
 end

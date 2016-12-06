@@ -107,8 +107,8 @@ struct ext2_priv_data is
     uint32 inodes_per_block;
 end
 
-extern struct filesystem *ext2_mount(struct device *dev);
-extern struct file *ext2_open(struct filesystem *fs, char *p);
+##extern struct filesystem *ext2_mount(struct device *dev);
+##extern struct file *ext2_open(struct filesystem *fs, char *p);
 
 ## file
 ## extern int ext2_find_file_inode(void *, char *);

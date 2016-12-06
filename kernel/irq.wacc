@@ -1,0 +1,23 @@
+## IRQ handling for waccOS
+
+begin
+
+#include "uart_w.wach"
+#include "bcm2835_timer.wach"
+
+void irq_enable() is
+    begin inline
+        push {r0}
+        mrs r0,cpsr
+        bic r0,r0,#0x80
+        msr cpsr_c,r0
+        pop {r0}
+    end
+end
+
+void irq_hub() is
+    uart_write_stringN("--- IRQ ---");
+    bcm2835_timer_write_control(2);
+end
+
+end

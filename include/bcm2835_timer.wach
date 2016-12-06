@@ -2,3 +2,7 @@
 
 extern void bcm2835_timer_init();
 
+
+extern void bcm2835_timer_reset_interval(int interval);
+extern void bcm2835_timer_write_control(uint32 w);
+

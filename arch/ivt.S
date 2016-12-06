@@ -134,9 +134,10 @@ fault_reserved:
     1: b 1b
 
 fault_irq:
-    ldr r0, =fault_irq_str
-    bl uart_send_string
-    1: b 1b
+    push {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
+    bl irq_hub
+    pop {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
+    subs pc, lr, #4
 
 fault_fiq:
     ldr r0, =fault_fiq_str

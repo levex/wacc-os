@@ -11,38 +11,53 @@ void bcm2835_timer_init() is
     uart_write_string("BCM2835 System timer driver initializing\n\r");
 end
 
+void bcm2835_timer_reset_interval(int interval) is
+    uint32 clo = bcm2835_timer_read_lower();
+    clo += interval;
+    bcm2835_timer_write_cmp1(clo);
+    bcm2835_timer_write_control(2);
+end
+
 ## control register
 
 uint32 bcm2835_timer_read_control() is
     return mmio_read32(bcm2835_timer_base + 0x0);
 end
 
+void bcm2835_timer_write_control(uint32 w) is
+    mmio_write32(bcm2835_timer_base + 0x0, w);
+end
+
 ## current value registers
 
 uint32 bcm2835_timer_read_lower() is
-    return mmio_read32(bcm2835_timer_base + 0x4);
+    return mmio_read32(bcm2835_timer_base + 0x1);
 end
 
 uint32 bcm2835_timer_read_higher() is
-    return mmio_read32(bcm2835_timer_base + 0x8);
+    return mmio_read32(bcm2835_timer_base + 0x2);
 end
 
 ## compare registers
 
 uint32 bcm2835_timer_read_cmp0() is
-    return mmio_read32(bcm2835_timer_base + 0x8);
+    return mmio_read32(bcm2835_timer_base + 0x3);
 end
 
 uint32 bcm2835_timer_read_cmp1() is
-    return mmio_read32(bcm2835_timer_base + 0x8);
+    return mmio_read32(bcm2835_timer_base + 0x4);
+end
+
+void bcm2835_timer_write_cmp1(uint32 w) is
+    mmio_write32(bcm2835_timer_base + 0x4, w);
 end
 
 uint32 bcm2835_timer_read_cmp2() is
-    return mmio_read32(bcm2835_timer_base + 0x8);
+    return mmio_read32(bcm2835_timer_base + 0x5);
 end
 
 uint32 bcm2835_timer_read_cmp3() is
-    return mmio_read32(bcm2835_timer_base + 0x8);
+    return mmio_read32(bcm2835_timer_base + 0x6);
 end
 
 end

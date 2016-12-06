@@ -28,6 +28,7 @@ _start:
 	mov r0, #'c'
 	bl uart_send_byte
 
+
     bl kernel_main
 
 	bye:

@@ -121,25 +121,4 @@ begin
             set_frame(i);
         end
     end
-
-    uint8* base_malloc = 0;
-
-    ## defined by the linker script
-    void* kmalloc(int size) is
-        if (base_malloc == 0) then
-            base_malloc = &_data_end;
-            base_malloc += 4096;
-        else
-            skip;
-        end
-
-        void *ret = base_malloc;
-        base_malloc += size;
-        return ret;
-    end
-
-    void kfree(void *ptr) is
-        skip;
-    end
-
 end

@@ -14,7 +14,7 @@ extern void ext2_read_inode(void *buf, int inode);
 extern void* kmalloc(int sz);
 extern char* strtok(char* b, char d);
 
-struct ext2_superblock *sb = NULL;
+struct ext2_superblock *sb = null;
 
 int blocksize = 0;
 int inodes_per_block = 0;

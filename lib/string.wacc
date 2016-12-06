@@ -2,6 +2,11 @@ begin
 
 #include "uart_w.wach"
 
+    ## not yet implemented
+    char *strtok(char *str, char delim) is
+        return str;
+    end
+
     int strcmp(char *s1, char *s2) is
         while (*s1 != '\0' && *s1 == *s2) do
             s1++;

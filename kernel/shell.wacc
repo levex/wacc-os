@@ -5,8 +5,6 @@ begin
 #include "frame.wach"
 #include "malloc.wach"
 
-    char *buffer = null;
-
     void process_command(char *command) is
         if (strcmp(command, "ls") == 0) then
             uart_write_string("filesystem not yet available");
@@ -41,7 +39,7 @@ begin
     end
 
     void run_shell() is
-        buffer = kmalloc(4096);
+        char *buffer = kmalloc(4096);
 
         while true do
             uart_write_string("waccOS % ");

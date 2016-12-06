@@ -37,6 +37,11 @@ void syscall_open() is
     syscall_r0 = sys_ext2_open(syscall_r0, syscall_r1);
 end
 
+void syscall_close() is
+	remove_fd(syscall_r0);
+	syscall_r0 = 0;
+end
+
 void syscall_unhandled(char *str) is
     uart_write_string("unknown/unimplemented system call: ");
     if (str != 0) then
@@ -63,7 +68,7 @@ void syscall_hub(uint32 code) is
         syscall_open();
     end
     if (code == 6) then
-        syscall_unhandled("close");
+        syscall_close();
     end
     if (code == 11) then
         syscall_unhandled("execve");

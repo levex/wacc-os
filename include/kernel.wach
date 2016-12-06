@@ -6,6 +6,7 @@ extern int getpid();
 extern void set_current_pid(int p);
 
 extern int get_fd(struct file *fp);
+extern void remove_fd(int fd);
 
 #define EMULATE_SYSCALL(id) begin inline \
                 push {r7}; \

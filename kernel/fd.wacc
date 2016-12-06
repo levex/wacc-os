@@ -38,4 +38,15 @@ int get_fd(struct file *fp) is
     return -EMFILE;
 end
 
+void remove_fd(int fd) is
+    struct fd_fp_store *ptr = store;
+    for (int i = 1; i < MAX_FDS; i ++) do
+        if (ptr.fd == fd) then
+            ## kfree(ptr.fp);
+            ptr.fp = 0;
+            return;
+        end
+    end
+end
+
 end

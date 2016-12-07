@@ -5,6 +5,8 @@ begin
 #include "uart_w.wach"
 #include "bcm2835_timer.wach"
 
+extern void schedule();
+
 void irq_enable() is
     begin inline
         push {r0}
@@ -16,8 +18,10 @@ void irq_enable() is
 end
 
 void irq_hub() is
-    uart_write_stringN("--- IRQ ---");
+    schedule();
     bcm2835_timer_write_control(2);
+    bcm2835_timer_reset_interval(0x80000);
+    irq_enable();
 end
 
 end

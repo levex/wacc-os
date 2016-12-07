@@ -13,6 +13,7 @@ begin
 char *__test_string = "Hello, world!";
 
 extern int ext2_find_file_inode(char *path);
+extern void process_test_1();
 extern char *ext2_read_file_full(char *path);
 
     void process_command(char *command) is
@@ -40,6 +41,7 @@ extern char *ext2_read_file_full(char *path);
             bcm2835_timer_reset_interval(0x80000);
             mmio_write32(0x2000B210, 0x00000002);
             irq_enable();
+            process_test_1();
         else if (strcmp(command, "sizeof") == 0) then
             uart_write_int(sizeof(struct file));
         else if (strcmp(command, "write") == 0) then

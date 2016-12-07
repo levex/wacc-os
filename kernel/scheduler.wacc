@@ -1,0 +1,191 @@
+## round robin preemptive scheduling for waccOS
+
+begin
+
+#include "kernel.wach"
+#include "frame.wach"
+#include "process.wach"
+#include "malloc.wach"
+#include "string.wach"
+#include "uart_w.wach"
+
+#define MAX_PROCS 128
+int last_pid = 0;
+
+## list of pointers to struct process
+uint32 *rq = null;
+uint32 rq_length = 0;
+
+struct process *current = null;
+
+uint32 irq_save_r0 = 0;
+uint32 irq_save_r1 = 0;
+uint32 irq_save_r2 = 0;
+uint32 irq_save_r3 = 0;
+uint32 irq_save_r4 = 0;
+uint32 irq_save_r5 = 0;
+uint32 irq_save_r6 = 0;
+uint32 irq_save_r7 = 0;
+uint32 irq_save_r8 = 0;
+uint32 irq_save_r9 = 0;
+uint32 irq_save_r10 = 0;
+uint32 irq_save_r11 = 0;
+uint32 irq_save_r12 = 0;
+uint32 irq_save_r13 = 0;
+uint32 irq_save_r14 = 0;
+uint32 irq_save_r14_irq = 0;
+
+void sched_init() is
+    last_pid = 1;
+    rq_length = 0;
+    rq = kmalloc(4 * MAX_PROCS);
+    for (int i = 0; i < MAX_PROCS; i ++) do
+        *(rq + i) = 0;
+    end
+    rq_length ++;
+
+    struct process *p = new_process("p1", &process_test_1);
+    sched_rq_add(p);
+    current = p;
+    p = new_process("p2", &process_test_2);
+    sched_rq_add(p);
+end
+
+void process_test_1() is
+    while (true) do
+        uart_write_string("1");
+    end
+end
+
+void process_test_2() is
+    while (true) do
+        uart_write_string("2");
+    end
+end
+
+void save_current_process() is
+    struct process_state *st = current.state;
+
+    st.r0 = irq_save_r0;
+    st.r1 = irq_save_r1;
+    st.r2 = irq_save_r2;
+    st.r3 = irq_save_r3;
+    st.r4 = irq_save_r4;
+    st.r5 = irq_save_r5;
+    st.r6 = irq_save_r6;
+    st.r7 = irq_save_r7;
+    st.r8 = irq_save_r8;
+    st.r9 = irq_save_r9;
+    st.r10 = irq_save_r10;
+    st.r11 = irq_save_r11;
+    st.r12 = irq_save_r12;
+    st.r13 = irq_save_r13;
+    st.r14 = irq_save_r14;
+    st.r14_irq = irq_save_r14_irq;
+end
+
+void restore_process(struct process *proc) is
+    struct process_state *st = proc.state;
+
+    irq_save_r0 = st.r0;
+    irq_save_r1 = st.r1;
+    irq_save_r2 = st.r2;
+    irq_save_r3 = st.r3;
+    irq_save_r4 = st.r4;
+    irq_save_r5 = st.r5;
+    irq_save_r6 = st.r6;
+    irq_save_r7 = st.r7;
+    irq_save_r8 = st.r8;
+    irq_save_r9 = st.r9;
+    irq_save_r10 = st.r10;
+    irq_save_r11 = st.r11;
+    irq_save_r12 = st.r12;
+    irq_save_r13 = st.r13;
+    irq_save_r14 = st.r14;
+    irq_save_r14_irq = st.r14_irq;
+end
+
+void dump_process_state(struct process *proc) is
+    struct process_state *st = proc.state;
+    uart_write_newline();
+    uart_write_string("r0: 0x");    uart_write_int_hex(st.r0);
+    uart_write_string(" r1: 0x");   uart_write_int_hex(st.r1);
+    uart_write_string(" r2: 0x");   uart_write_int_hex(st.r2);
+    uart_write_string(" r3: 0x");   uart_write_int_hexN(st.r3);
+
+    uart_write_string("r4: 0x");    uart_write_int_hex(st.r4);
+    uart_write_string(" r5: 0x");   uart_write_int_hex(st.r5);
+    uart_write_string(" r6: 0x");   uart_write_int_hex(st.r6);
+    uart_write_string(" r7: 0x");   uart_write_int_hexN(st.r7);
+
+    uart_write_string("r8: 0x");    uart_write_int_hex(st.r8);
+    uart_write_string(" r9: 0x");   uart_write_int_hex(st.r9);
+    uart_write_string(" r10: 0x");  uart_write_int_hex(st.r10);
+    uart_write_string(" r11: 0x");  uart_write_int_hexN(st.r11);
+
+    uart_write_string("r12: 0x");   uart_write_int_hex(st.r12);
+    uart_write_string(" r13: 0x");  uart_write_int_hex(st.r13);
+    uart_write_string(" r14: 0x");  uart_write_int_hex(st.r14);
+    uart_write_string(" r14i: 0x"); uart_write_int_hexN(st.r14_irq);
+end
+
+void schedule() is
+    save_current_process();
+    struct process *next = 0;
+    for (int i = 0; i < MAX_PROCS; i ++) do
+        struct process *proc = *(rq + i);
+        if (proc != 0 && proc != current) then
+            next = proc;
+            break;
+        end
+    end
+
+    current = next;
+    if (current == 0) then
+        panic("no available process to schedule to");
+    end
+    restore_process(current);
+end
+
+int get_fresh_pid() is
+    last_pid ++;
+    return last_pid;
+end
+
+void *allocate_stack() is
+    void *base = mm_alloc_pages(1);
+    void *ret = base + 4096;
+
+    uart_write_string("sending stack: ");
+    uart_write_int_hexN(ret);
+
+    return ret;
+end
+
+struct process *new_process(char *comm, uint32 entry) is
+    struct process *proc = kmalloc(sizeof(struct process));
+    struct process_state *st = kmalloc(sizeof(struct process_state));
+    memset(st, 0, sizeof(struct process_state));
+
+    proc.state = st;
+    st.r13 = allocate_stack();
+    st.r14 = entry;
+    st.r14_irq = st.r14 + 4;
+    proc.pid = get_fresh_pid();
+    proc.comm = comm;
+    return proc;
+end
+
+void sched_rq_add(struct process *proc) is
+    for (int i = 0; i < MAX_PROCS; i ++) do
+        uint32 *r = (rq + i);
+        if (*r == 0) then
+            *r = proc;
+            rq_length ++;
+            return;
+        end
+    end
+    panic("Scheduler RQ is full");
+end
+
+end

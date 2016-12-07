@@ -44,42 +44,28 @@ fault_swi:
     push {lr}
 
     push {r11}
-
-
     ldr r11, =syscall_r0
     str r0, [r11]
-
     ldr r11, =syscall_r1
     str r1, [r11]
-
     ldr r11, =syscall_r2
     str r2, [r11]
-
     ldr r11, =syscall_r3
     str r3, [r11]
-
     ldr r11, =syscall_r4
     str r4, [r11]
-
     ldr r11, =syscall_r5
     str r5, [r11]
-
     ldr r11, =syscall_r6
     str r6, [r11]
-
     ldr r11, =syscall_r7
     str r7, [r11]
-
     ldr r11, =syscall_r8
     str r8, [r11]
-
     ldr r11, =syscall_r9
     str r9, [r11]
-
     ldr r11, =syscall_r10
     str r10, [r11]
-
-
     pop {r11}
 
     push {r10}
@@ -133,10 +119,134 @@ fault_reserved:
     bl uart_send_string
     1: b 1b
 
+.macro irqsave_regs
+     push {r11}
+     ldr r11, =irq_save_r0
+     str r0, [r11]
+
+     ldr r11, =irq_save_r1
+     str r1, [r11]
+
+     ldr r11, =irq_save_r2
+     str r2, [r11]
+
+     ldr r11, =irq_save_r3
+     str r3, [r11]
+
+     ldr r11, =irq_save_r4
+     str r4, [r11]
+
+     ldr r11, =irq_save_r5
+     str r5, [r11]
+
+     ldr r11, =irq_save_r6
+     str r6, [r11]
+
+     ldr r11, =irq_save_r7
+     str r7, [r11]
+
+     ldr r11, =irq_save_r8
+     str r8, [r11]
+
+     ldr r11, =irq_save_r9
+     str r9, [r11]
+
+     ldr r11, =irq_save_r10
+     str r10, [r11]
+
+     ldr r11, =irq_save_r12
+     str r12, [r11]
+
+     pop {r11}
+
+     ldr r10, =irq_save_r11
+     str r11, [r10]
+.endm
+
+.macro irqrestore_regs
+     ldr r0, =irq_save_r0
+     ldr r0, [r0]
+     ldr r1, =irq_save_r1
+     ldr r1, [r1]
+     ldr r2, =irq_save_r2
+     ldr r2, [r2]
+     ldr r3, =irq_save_r3
+     ldr r3, [r3]
+     ldr r4, =irq_save_r4
+     ldr r4, [r4]
+     ldr r5, =irq_save_r5
+     ldr r5, [r5]
+     ldr r6, =irq_save_r6
+     ldr r6, [r6]
+     ldr r7, =irq_save_r7
+     ldr r7, [r7]
+     ldr r8, =irq_save_r8
+     ldr r8, [r8]
+     ldr r9, =irq_save_r9
+     ldr r9, [r9]
+     ldr r10, =irq_save_r10
+     ldr r10, [r10]
+     ldr r11, =irq_save_r11
+     ldr r11, [r11]
+     ldr r12, =irq_save_r12
+     ldr r12, [r12]
+.endm
+
+.equ Mode_IRQ, 0x12
+.equ Mode_SVC, 0x13
+.equ I_Bit, 0x80
+.equ F_Bit, 0x40
+.equ CPSRIRQ, (Mode_IRQ | I_Bit | F_Bit)
+.equ CPSRSVC, (Mode_SVC | I_Bit | F_Bit)
+
+.macro drop_to_irq_mode
+    msr CPSR_c, #CPSRIRQ
+.endm
+
+.macro rise_to_svc_mode
+    msr CPSR_c, #CPSRSVC
+.endm
+
+.balign 16
 fault_irq:
-    push {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
+    # begin save
+    irqsave_regs
+
+    rise_to_svc_mode
+    mov r0, sp
+    mov r1, r14
+    drop_to_irq_mode
+
+    # store LR_irq & SP_irq
+    ldr r2, =irq_save_r13
+    ldr r3, =irq_save_r14
+    str r0, [r2]
+    str r1, [r3]
+    # end save
+
+    ldr r0, =irq_save_r14_irq
+    str r14, [r0]
+
     bl irq_hub
-    pop {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, lr}
+
+    # begin restore
+    ldr r0, =irq_save_r13
+    ldr r0, [r0]
+    ldr r1, =irq_save_r14
+    ldr r1, [r1]
+
+    rise_to_svc_mode
+    mov sp, r0
+    mov lr, r1
+    drop_to_irq_mode
+
+    ldr r14, =irq_save_r14_irq
+    ldr r14, [r14]
+
+    irqrestore_regs
+    # end restore
+
+    # return
     subs pc, lr, #4
 
 fault_fiq:

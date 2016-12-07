@@ -17,10 +17,11 @@ fault_irq_str: .asciz "IRQ fault happened\n"
 .balign 16
 fault_fiq_str: .asciz "FIQ fault happened\n"
 
-.section ".text"
-
 .balign 4
 undef_stack: .skip 4 * 32
+
+.section ".text"
+
 
 .balign 16
 fault_reset:

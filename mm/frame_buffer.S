@@ -3,8 +3,8 @@
 // divided by 4096 (size of page)
 // divided by 8 (number of bits in a byte)
 .balign 16
-.globl frames
-frames: .skip 8192
+.globl _frames
+_frames: .skip 8192
 
 .balign 16
 .globl nframes

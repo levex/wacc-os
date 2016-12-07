@@ -7,7 +7,9 @@ begin
 #define OFFSET_BIT(x) (x % 32)
 
     extern uint32 nframes;
-    extern uint32 *frames;
+    extern uint32 _frames;
+
+    uint32 *frames = null;
 
     ## set_frame writes a 1 into the corresponding bit
     ## for the address a in the page map
@@ -113,6 +115,7 @@ begin
 
     void mm_init() is
         uart_write_stringN("Memory manager initializing...");
+        frames = &_frames;
         memset(frames, 0, 8192);
         for (int i = &_text_start; i < &_text_end; i += 0x1000) do
             set_frame(i);

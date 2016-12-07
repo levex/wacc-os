@@ -117,7 +117,10 @@ begin
         uart_write_stringN("Memory manager initializing...");
         frames = &_frames;
         memset(frames, 0, 8192);
-        for (int i = &_text_start; i < &_text_end; i += 0x1000) do
+        for (int i = 0; i < 0xA000; i += 0x1000) do
+            set_frame(i);
+        end
+        for (int i = 0x8000; i < &_text_end; i += 0x1000) do
             set_frame(i);
         end
         for (int i = &_data_start; i < &_data_end; i += 0x1000) do

@@ -20,8 +20,15 @@ struct process_state is
     uint32 r15; ## pc
 end
 
+#define PROC_STATE_UNKNOWN   0
+#define PROC_STATE_RUNNING   1
+#define PROC_STATE_PREEMPTED 2
+#define PROC_STATE_PRERUN    4
+#define PROC_STATE_ZOMBIE    3
+
 struct process is
     int pid;
     char *comm;
+    int run_state;
     struct process_state *state;
 end

@@ -156,10 +156,12 @@ void schedule() is
         end
     end
 
-    current = next;
-    if (current == 0) then
+    if (next == 0) then
         panic("no available process to schedule to");
     end
+    current.run_state = PROC_STATE_PREEMPTED;
+    current = next;
+    current.run_state = PROC_STATE_RUNNING;
     restore_process(current);
 end
 
@@ -198,6 +200,7 @@ struct process *new_process(char *comm, uint32 entry) is
     st.r14_irq = st.r14 + 4;
     proc.pid = get_fresh_pid();
     proc.comm = comm;
+    proc.run_state = PROC_STATE_PRERUN;
     return proc;
 end
 

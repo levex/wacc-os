@@ -155,10 +155,6 @@ end
 void *allocate_stack() is
     void *base = mm_alloc_pages(1);
     void *ret = base + 4096;
-
-    uart_write_string("sending stack: ");
-    uart_write_int_hexN(ret);
-
     return ret;
 end
 

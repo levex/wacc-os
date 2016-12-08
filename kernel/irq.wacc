@@ -20,7 +20,7 @@ end
 void irq_hub() is
     schedule();
     bcm2835_timer_write_control(2);
-    bcm2835_timer_reset_interval(0x20000);
+    bcm2835_timer_reset_interval(0x5000);
     irq_enable();
 end
 

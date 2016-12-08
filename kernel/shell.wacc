@@ -84,7 +84,7 @@ void run_shell() is
     char *buffer = kmalloc(4096);
 
     ## start scheduling
-    bcm2835_timer_reset_interval(0x80000);
+    bcm2835_timer_reset_interval(0x5000);
     mmio_write32(0x2000B210, 0x00000002);
     irq_enable();
 

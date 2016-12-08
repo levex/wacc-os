@@ -14,6 +14,7 @@ char *__test_string = "Hello, world!";
 
 extern int ext2_find_file_inode(char *path);
 extern void process_test_1();
+extern void elf_dump_file(char *path);
 extern char *ext2_read_file_full(char *path);
 
     void process_command(char *command) is
@@ -25,6 +26,9 @@ extern char *ext2_read_file_full(char *path);
             char *arg = command + 6;
             int ino = ext2_find_file_inode(arg);
             uart_write_int(ino);
+        else if (strncmp(command, "elf ", 4) == 0) then
+            char *arg = command + 4;
+            elf_dump_file(arg);
         else if (strncmp(command, "cat ", 4) == 0) then
             char *arg = command + 4;
             char *ino = ext2_read_file_full(arg);
@@ -67,7 +71,7 @@ extern char *ext2_read_file_full(char *path);
         else
             uart_write_string("command not found: ");
             uart_write_string(command);
-        end end end end end end end end end end end
+        end end end end end end end end end end end end
 
         if (strlen(command) != 0) then
             uart_write_newline();

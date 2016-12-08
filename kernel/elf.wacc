@@ -2,7 +2,10 @@
 begin
 
 #include "kernel.wach"
+#include "uart_w.wach"
 #include "elf.wach"
+
+extern char *ext2_read_file_full(char *path);
 
 bool elf_do_probe(struct elf_header *elf) is
     if (elf.ei_magic0 != 0x7F) then
@@ -19,6 +22,35 @@ bool elf_do_probe(struct elf_header *elf) is
     end
 
     return true;
+end
+
+void elf_dump_buffer(struct elf_header *elf) is
+    if (elf_do_probe(elf)) then
+        uart_write_stringN("elf: valid file");
+    else
+        uart_write_stringN("elf: invalid file");
+        return;
+    end
+
+    uart_write_string("elf: entry point at: ");
+    uart_write_int_hexN(elf.e_entry);
+
+    uart_write_string("elf: program headers at: ");
+    uart_write_int_hexN(elf.e_phoff);
+
+    uart_write_string("elf: sections headers at: ");
+    uart_write_int_hexN(elf.e_shoff);
+
+    uart_write_string("elf: number of program headers: ");
+    uart_write_int_hexN(elf.e_phnum);
+
+    uart_write_string("elf: number of section headers: ");
+    uart_write_int_hexN(elf.e_shnum);
+end
+
+void elf_dump_file(char *path) is
+    char *buf = ext2_read_file_full(path);
+    elf_dump_buffer(buf);
 end
 
 end

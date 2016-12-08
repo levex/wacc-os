@@ -83,6 +83,19 @@ void process_test_2() is
     end
 end
 
+void dump_processes() is
+    for (int i = 0; i < MAX_PROCS; i ++) do
+        struct process *proc = *(rq + i);
+
+        if (proc != 0) then
+            uart_write_string("pid: ");
+            uart_write_int(proc.pid);
+            uart_write_string("  comm: ");
+            uart_write_stringN(proc.comm);
+        end
+    end
+end
+
 void save_current_process() is
     struct process_state *st = current.state;
 

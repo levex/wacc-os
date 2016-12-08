@@ -2,6 +2,7 @@ begin
 
 #include "uart_w.wach"
 #include "mmio.wach"
+#include "process.wach"
 #include "bcm2835_timer.wach"
 #include "kernel.wach"
 #include "file.wach"
@@ -18,6 +19,7 @@ extern void process_test_1();
 extern void elf_dump_file(char *path);
 extern void elf_execute_path(char *path);
 extern char *ext2_read_file_full(char *path);
+extern void dump_processes();
 
 void process_command(char *command) is
     if (strcmp(command, "ls") == 0) then
@@ -46,7 +48,8 @@ void process_command(char *command) is
         end end
     else if (strcmp(command, "swi") == 0) then
         EMULATE_SYSCALL(42)
-    else if (strcmp(command, "irq") == 0) then
+    else if (strcmp(command, "ps") == 0) then
+        dump_processes();
     else if (strcmp(command, "sizeof") == 0) then
         uart_write_int(sizeof(struct file));
     else if (strcmp(command, "write") == 0) then
@@ -80,6 +83,7 @@ void process_command(char *command) is
 
 end
 
+extern struct process *current;
 void run_shell() is
     char *buffer = kmalloc(4096);
 
@@ -87,6 +91,9 @@ void run_shell() is
     bcm2835_timer_reset_interval(0x5000);
     mmio_write32(0x2000B210, 0x00000002);
     irq_enable();
+    set_current_pid(1);
+    struct process *curr = current;
+    curr.pid = 1;
 
     while true do
         uart_write_string("waccOS % ");

@@ -11,6 +11,7 @@ begin
 
 #define MAX_PROCS 128
 int last_pid = 0;
+int last_scheduled = 0;
 
 ## list of pointers to struct process
 uint32 *rq = null;
@@ -37,6 +38,7 @@ uint32 irq_save_r14_irq = 0;
 
 void sched_init() is
     last_pid = 1;
+    last_scheduled = 0;
     rq_length = 0;
     rq = kmalloc(4 * MAX_PROCS);
     for (int i = 0; i < MAX_PROCS; i ++) do
@@ -132,10 +134,24 @@ end
 void schedule() is
     save_current_process();
     struct process *next = 0;
-    for (int i = 0; i < MAX_PROCS; i ++) do
+    int nproc = 0;
+
+    for (int i = last_scheduled; i < MAX_PROCS; i ++) do
         struct process *proc = *(rq + i);
-        if (proc != 0 && proc != current) then
+        if (proc != 0) then
+            nproc ++;
+        end
+    end
+
+    if (nproc == 0) then
+        last_scheduled = 0;
+    end
+
+    for (int i = last_scheduled; i < MAX_PROCS; i ++) do
+        struct process *proc = *(rq + i);
+        if (proc != 0 ) then
             next = proc;
+            last_scheduled = i + 1;
             break;
         end
     end

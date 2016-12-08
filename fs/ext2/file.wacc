@@ -44,6 +44,19 @@ int sys_ext2_open(char *path, int flags) is
     return get_fd(fp);
 end
 
+void ext2_read_singly(void *buf, int singly_block) is
+    uint32 *block_buf = kmalloc(blocksize);
+    ext2_read_block(block_buf, singly_block);
+
+    for (int n = 0; n < 256; n ++) do
+        uint32 blockid = *(block_buf + n);
+        if (blockid == 0) then
+            return;
+        end
+        ext2_read_block(buf + (n * blocksize), blockid);
+    end
+end
+
 int ext2_find_file_inode(char *path) is
     char *fn = kmalloc(strlen(path) + 1);
 
@@ -137,6 +150,9 @@ char *ext2_read_file_full(char *path) is
         ext2_read_block(block_buf, inode.dbp12);
         int offset = blocksize * 11;
         memcpy(buf + offset, block_buf, blocksize);
+    end
+    if (inode.singly_block != 0) then
+        ext2_read_singly(buf + blocksize * 12, inode.singly_block);
     end
 
     return buf;

@@ -18,6 +18,10 @@ uint32 syscall_r8  = 0;
 uint32 syscall_r9  = 0;
 uint32 syscall_r10 = 0;
 uint32 syscall_r11 = 0;
+uint32 syscall_r12 = 0;
+uint32 syscall_r14 = 0; # lr
+
+extern void sched_rq_remove_current();
 
 ## we reserve r12 as a system call scratch register
 ## return value is returned in r0
@@ -32,6 +36,10 @@ void syscall_exit() is
     if (pid == 0) then
         panic("kernel called exit system-call, this is brutal");
     end
+
+    sched_rq_remove_current();
+    irq_enable();
+    while (true) do skip; end
 end
 
 extern int sys_ext2_open(char *p, int flags);

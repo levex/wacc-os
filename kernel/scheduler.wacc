@@ -46,6 +46,7 @@ void sched_init() is
     struct process *p = new_process("p1", &process_test_1);
     sched_rq_add(p);
     current = p;
+    set_current_pid(current.pid);
     p = new_process("p2", &process_test_2);
     sched_rq_add(p);
     p = new_process("p3", &process_test_3);
@@ -54,19 +55,32 @@ end
 
 void process_test_1() is
     while (true) do
-        uart_write_string("1");
+        uart_write_int(getpid());
     end
 end
 
 void process_test_3() is
+    int n = 1000;
+
+    while ((n --) != 0) do
+        uart_write_int(getpid());
+    end
+
+    begin inline
+        push {lr}
+        mov r7, #1
+        swi 0
+        pop {lr}
+    end
+
     while (true) do
-        uart_write_string("3");
+        uart_write_int(getpid());
     end
 end
 
 void process_test_2() is
     while (true) do
-        uart_write_string("2");
+        uart_write_int(getpid());
     end
 end
 
@@ -110,6 +124,8 @@ void restore_process(struct process *proc) is
     irq_save_r13 = st.r13;
     irq_save_r14 = st.r14;
     irq_save_r14_irq = st.r14_irq;
+
+    set_current_pid(proc.pid);
 end
 
 void dump_process_state(struct process *proc) is
@@ -141,6 +157,16 @@ void schedule() is
     struct process *next = 0;
     int nproc = 0;
 
+    for (int i = 0; i < MAX_PROCS; i ++) do
+        struct process *proc = *(rq + i);
+        if (proc != 0) then
+            if (proc.run_state == PROC_STATE_ZOMBIE) then
+                *(rq + i) = 0;
+                last_scheduled = 0;
+            end
+        end
+    end
+
     for (int i = last_scheduled; i < MAX_PROCS; i ++) do
         struct process *proc = *(rq + i);
         if (proc != 0) then
@@ -154,7 +180,7 @@ void schedule() is
 
     for (int i = last_scheduled; i < MAX_PROCS; i ++) do
         struct process *proc = *(rq + i);
-        if (proc != 0 ) then
+        if (proc != 0) then
             next = proc;
             last_scheduled = i + 1;
             break;
@@ -164,9 +190,8 @@ void schedule() is
     if (next == 0) then
         panic("no available process to schedule to");
     end
-    current.run_state = PROC_STATE_PREEMPTED;
     current = next;
-    current.run_state = PROC_STATE_RUNNING;
+    next.run_state = PROC_STATE_RUNNING;
     restore_process(current);
 end
 
@@ -221,19 +246,24 @@ void sched_rq_add(struct process *proc) is
 end
 
 void sched_rq_remove(struct process *target) is
+    if (target.pid == current.pid) then
+        target.run_state = PROC_STATE_ZOMBIE;
+        return;
+    end
+
     for (int i = 0; i < MAX_PROCS; i ++) do
         struct process *proc = *(rq + i);
         if (proc != 0) then
             if (proc.pid == target.pid) then
-                if (target.pid == current.pid) then
-                    current.run_state = PROC_STATE_ZOMBIE;
-                    ## voluntary schedule here
-                    return;
-                end
                 *(rq + i) = 0;
+                return;
             end
         end
     end
+end
+
+void sched_rq_remove_current() is
+    sched_rq_remove(current);
 end
 
 end

@@ -23,8 +23,8 @@ end
 #define PROC_STATE_UNKNOWN   0
 #define PROC_STATE_RUNNING   1
 #define PROC_STATE_PREEMPTED 2
-#define PROC_STATE_PRERUN    4
 #define PROC_STATE_ZOMBIE    3
+#define PROC_STATE_PRERUN    4
 
 struct process is
     int pid;

@@ -42,8 +42,6 @@ fault_undefined:
 
 .balign 16
 fault_swi:
-    push {lr}
-
     push {r11}
     ldr r11, =syscall_r0
     str r0, [r11]
@@ -67,6 +65,10 @@ fault_swi:
     str r9, [r11]
     ldr r11, =syscall_r10
     str r10, [r11]
+    ldr r11, =syscall_r12
+    str r12, [r11]
+    ldr r11, =syscall_r14
+    str r14, [r11]
     pop {r11}
 
     push {r10}
@@ -102,8 +104,12 @@ fault_swi:
     ldr r10, [r10]
     ldr r11, =syscall_r11
     ldr r11, [r11]
+    ldr r12, =syscall_r12
+    ldr r12, [r12]
+    ldr r14, =syscall_r14
+    ldr r14, [r14]
 
-    pop {pc}
+    mov pc, lr
 
 fault_prefetch_abort:
     ldr r0, =fault_prefetch_abort_str

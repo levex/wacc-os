@@ -1,11 +1,13 @@
 begin
-  int atoi (char *s) is
+
+int atoi (char *s) is
     int res = 0;
     while (*s != '\0') do
-      res = (res * 10) + (*s - '0');
-      s++;
+        res = (res * 10) + (*s - '0');
+        s++;
     end
 
     return res;
-  end
+end
+
 end

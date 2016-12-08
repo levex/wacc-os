@@ -3,11 +3,12 @@ begin
 
 #include "uart_w.wach"
 
-    void panic(string msg) is
-        uart_write_string("*** Kernel panic: ");
-        uart_write_stringN(msg);
-        while (true) do
-            skip;
-        end
+void panic(string msg) is
+    uart_write_string("*** Kernel panic: ");
+    uart_write_stringN(msg);
+    while (true) do
+        skip;
     end
+end
+
 end

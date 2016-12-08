@@ -1,3 +1,4 @@
 #!/bin/sh
 
-VBoxManage convertdd disk.img sda.vdi --format VDI --variant Fixe<Paste>
+rm sda.vdi
+VBoxManage convertdd disk.img sda.vdi --format VDI --variant Fixed

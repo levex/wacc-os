@@ -1,0 +1,24 @@
+## ELF file format handling for waccOS
+begin
+
+#include "kernel.wach"
+#include "elf.wach"
+
+bool elf_do_probe(struct elf_header *elf) is
+    if (elf.ei_magic0 != 0x7F) then
+        return false;
+    end
+    if (elf.ei_magic1 != 'E') then
+        return false;
+    end
+    if (elf.ei_magic2 != 'L') then
+        return false;
+    end
+    if (elf.ei_magic3 != 'F') then
+        return false;
+    end
+
+    return true;
+end
+
+end

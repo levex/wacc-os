@@ -163,6 +163,19 @@ void schedule() is
     restore_process(current);
 end
 
+struct process *proc_find_by_pid(int pid) is
+    for (int i = 0; i < MAX_PROCS; i ++) do
+        struct process *proc = *(rq + i);
+        if (proc != null) then
+            if (proc.pid == pid) then
+                return proc;
+            end
+        end
+    end
+
+    return 0;
+end
+
 int get_fresh_pid() is
     last_pid ++;
     return last_pid;

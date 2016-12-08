@@ -15,9 +15,8 @@ int last_scheduled = 0;
 
 ## list of pointers to struct process
 uint32 *rq = null;
-uint32 rq_length = 0;
 
-struct process *current = null;
+struct process *current = 0;
 
 uint32 irq_save_r0 = 0;
 uint32 irq_save_r1 = 0;
@@ -39,23 +38,29 @@ uint32 irq_save_r14_irq = 0;
 void sched_init() is
     last_pid = 1;
     last_scheduled = 0;
-    rq_length = 0;
     rq = kmalloc(4 * MAX_PROCS);
     for (int i = 0; i < MAX_PROCS; i ++) do
         *(rq + i) = 0;
     end
-    rq_length ++;
 
     struct process *p = new_process("p1", &process_test_1);
     sched_rq_add(p);
     current = p;
     p = new_process("p2", &process_test_2);
     sched_rq_add(p);
+    p = new_process("p3", &process_test_3);
+    sched_rq_add(p);
 end
 
 void process_test_1() is
     while (true) do
         uart_write_string("1");
+    end
+end
+
+void process_test_3() is
+    while (true) do
+        uart_write_string("3");
     end
 end
 
@@ -179,7 +184,7 @@ struct process *proc_find_by_pid(int pid) is
 end
 
 int get_fresh_pid() is
-    last_pid ++;
+    last_pid = last_pid + 1; 
     return last_pid;
 end
 
@@ -209,11 +214,26 @@ void sched_rq_add(struct process *proc) is
         uint32 *r = (rq + i);
         if (*r == 0) then
             *r = proc;
-            rq_length ++;
             return;
         end
     end
     panic("Scheduler RQ is full");
+end
+
+void sched_rq_remove(struct process *target) is
+    for (int i = 0; i < MAX_PROCS; i ++) do
+        struct process *proc = *(rq + i);
+        if (proc != 0) then
+            if (proc.pid == target.pid) then
+                if (target.pid == current.pid) then
+                    current.run_state = PROC_STATE_ZOMBIE;
+                    ## voluntary schedule here
+                    return;
+                end
+                *(rq + i) = 0;
+            end
+        end
+    end
 end
 
 end

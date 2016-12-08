@@ -3,6 +3,7 @@ begin
 
 #include "kernel.wach"
 #include "uart_w.wach"
+#include "string.wach"
 #include "elf.wach"
 
 extern char *ext2_read_file_full(char *path);
@@ -46,6 +47,33 @@ void elf_dump_buffer(struct elf_header *elf) is
 
     uart_write_string("elf: number of section headers: ");
     uart_write_int_hexN(elf.e_shnum);
+end
+
+void execute_at_address(char *p) is
+    begin inline
+        bx r4
+    end
+end
+
+#define LOAD_ADDR
+void elf_execute(uint8 *buf) is
+    struct elf_header *elf = buf;
+
+    struct elf_ph *ph = buf + elf.e_phoff;
+    for (int i = 0; i < elf.e_phnum; i ++) do
+        if (ph.p_type == 1) then
+            ## this is a LOAD_PH
+            memcpy(ph.p_vaddr, buf + ph.p_offset, ph.p_filesz);
+        end
+        ph ++;
+    end
+
+    execute_at_address(elf.e_entry);
+end
+
+void elf_execute_path(char *path) is
+    char *buf = ext2_read_file_full(path);
+    elf_execute(buf);
 end
 
 void elf_dump_file(char *path) is

@@ -27,3 +27,15 @@ struct elf_header is
     uint16 e_shnum;
     uint16 e_shstrndx;
 end
+
+struct elf_ph is
+    uint32 p_type;
+    uint32 p_offset;
+    uint32 p_vaddr;
+    uint32 p_paddr;
+    uint32 p_filesz;
+    uint32 p_memsz;
+    uint32 p_flags;
+    uint32 p_align;
+end
+

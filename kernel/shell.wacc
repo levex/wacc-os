@@ -47,10 +47,6 @@ void process_command(char *command) is
     else if (strcmp(command, "swi") == 0) then
         EMULATE_SYSCALL(42)
     else if (strcmp(command, "irq") == 0) then
-        bcm2835_timer_reset_interval(0x80000);
-        mmio_write32(0x2000B210, 0x00000002);
-        irq_enable();
-        process_test_1();
     else if (strcmp(command, "sizeof") == 0) then
         uart_write_int(sizeof(struct file));
     else if (strcmp(command, "write") == 0) then
@@ -86,6 +82,11 @@ end
 
 void run_shell() is
     char *buffer = kmalloc(4096);
+
+    ## start scheduling
+    bcm2835_timer_reset_interval(0x80000);
+    mmio_write32(0x2000B210, 0x00000002);
+    irq_enable();
 
     while true do
         uart_write_string("waccOS % ");

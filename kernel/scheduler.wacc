@@ -43,19 +43,18 @@ void sched_init() is
         *(rq + i) = 0;
     end
 
-    struct process *p = new_process("p1", &process_test_1);
+    struct process *p = new_process("kernel_init", 0);
     sched_rq_add(p);
     current = p;
     set_current_pid(current.pid);
-    p = new_process("p2", &process_test_2);
-    sched_rq_add(p);
-    p = new_process("p3", &process_test_3);
+
+    p = new_process("idle", &process_idle);
     sched_rq_add(p);
 end
 
-void process_test_1() is
+void process_idle() is
     while (true) do
-        uart_write_int(getpid());
+        skip;
     end
 end
 

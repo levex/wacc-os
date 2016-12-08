@@ -109,6 +109,14 @@ fault_swi:
     ldr r14, =syscall_r14
     ldr r14, [r14]
 
+
+    ## enable IRQs
+    push {r0}
+    mrs r0,cpsr
+    bic r0,r0,#0x80
+    msr cpsr_c,r0
+    pop {r0}
+
     mov pc, lr
 
 fault_prefetch_abort:

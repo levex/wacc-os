@@ -4,9 +4,14 @@ begin
 #include "kernel.wach"
 #include "uart_w.wach"
 #include "string.wach"
+#include "malloc.wach"
+#include "process.wach"
 #include "elf.wach"
 
 extern char *ext2_read_file_full(char *path);
+extern struct process *new_process(char *comm, uint32 entry);
+extern void process_set_entry(struct process *proc, uint32 entry);
+extern void sched_rq_add(struct process *proc);
 
 bool elf_do_probe(struct elf_header *elf) is
     if (elf.ei_magic0 != 0x7F) then
@@ -56,7 +61,7 @@ void execute_at_address(char *p) is
 end
 
 #define LOAD_ADDR
-void elf_execute(uint8 *buf) is
+uint32 elf_load(uint8 *buf) is
     struct elf_header *elf = buf;
 
     struct elf_ph *ph = buf + elf.e_phoff;
@@ -68,12 +73,35 @@ void elf_execute(uint8 *buf) is
         ph ++;
     end
 
-    execute_at_address(elf.e_entry);
+    return elf.e_entry;
+end
+
+uint32 elf_load_path(char *path) is
+    char *buf = ext2_read_file_full(path);
+
+    return elf_load(buf);
+end
+
+void elf_execute(uint8* buf) is
+    uint32 entry = elf_load(buf);
+
+    execute_at_address(entry);
 end
 
 void elf_execute_path(char *path) is
     char *buf = ext2_read_file_full(path);
     elf_execute(buf);
+end
+
+void elf_execute_path_in_new_process(char *path) is
+    int len = strlen(path);
+    char *namebuf = kmalloc(len + 1);
+    memcpy(namebuf, path, len);
+    *(namebuf + len) = 0;
+
+    uint32 entry = elf_load_path(path);
+    struct process *proc = new_process(namebuf, entry);
+    sched_rq_add(proc);
 end
 
 void elf_dump_file(char *path) is

@@ -16,6 +16,15 @@ void irq_enable() is
         pop {r0}
     end
 end
+void irq_disable() is
+    begin inline
+        push {r0}
+        mrs r0,cpsr
+        and r0,r0,#0x80
+        msr cpsr_c,r0
+        pop {r0}
+    end
+end
 
 void irq_hub() is
     schedule();

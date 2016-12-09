@@ -9,6 +9,7 @@ extern int get_fd(struct file *fp);
 extern void remove_fd(int fd);
 
 extern void irq_enable();
+extern void irq_disable();
 
 #define EMULATE_SYSCALL(id) begin inline \
                 push {r7}; \

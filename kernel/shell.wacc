@@ -20,6 +20,7 @@ extern void elf_dump_file(char *path);
 extern void elf_execute_path(char *path);
 extern char *ext2_read_file_full(char *path);
 extern void dump_processes();
+extern void elf_execute_path_in_new_process(char *path);
 
 void process_command(char *command) is
     if (strcmp(command, "ls") == 0) then
@@ -35,7 +36,7 @@ void process_command(char *command) is
         elf_dump_file(arg);
     else if (strncmp(command, "exec ", 5) == 0) then
         char *arg = command + 5;
-        elf_execute_path(arg);
+        elf_execute_path_in_new_process(arg);
     else if (strncmp(command, "cat ", 4) == 0) then
         char *arg = command + 4;
         char *ino = ext2_read_file_full(arg);

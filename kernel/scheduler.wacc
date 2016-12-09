@@ -96,6 +96,13 @@ void dump_processes() is
     end
 end
 
+void process_set_entry(struct process *proc, uint32 entry) is
+    struct process_state *st = proc.state;
+
+    st.r14 = entry;
+    st.r14_irq = st.r14 + 4;
+end
+
 void save_current_process() is
     struct process_state *st = current.state;
 

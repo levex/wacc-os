@@ -1,0 +1,69 @@
+begin
+
+#include "string.wach"
+#include "uart_w.wach"
+#include "ext2.wach"
+#include "errno.wach"
+#include "malloc.wach"
+
+## readdir support/hack for waccOS
+## hack bc of lack of time, ideally we would do getdents(2)
+
+extern void ext2_read_inode(void *buf, int i);
+extern int blocksize;
+extern void ext2_read_block(void *buf, int bid);
+extern char* ext2_dirent_get_name(struct ext2_dir *ent);
+
+int ext2_readdir_directory_helper(struct ext2_dir *d) is
+    int r = 0;
+    while (r < blocksize) do
+
+        if (d.size == 0 || d.namelength == 0) then
+            return 0;
+        end
+
+        char* a = ext2_dirent_get_name(d);
+        uart_write_stringN(a);
+        r += d.size;
+        uint8 *p = d;
+        p = p + d.size;
+        d = p;
+    end
+    return 0;
+end
+
+int ext2_readdir_directory(int dino) is
+    ## read the directory inode in
+    struct ext2_inode *inode = kmalloc(128);
+    ext2_read_inode(inode, dino);
+
+    if (((inode.type) & 0x4000) == 0) then
+        return -ENOTDIR;
+    end
+
+    return ext2_readdir_directory_buf(inode);
+end
+
+int ext2_readdir_directory_buf(struct ext2_inode *inode) is
+    void *bbuf = kmalloc(blocksize);
+    uint8 *__i = inode;
+    __i += 40;
+    uint32 *__j = __i;
+    for (int i = 0; i < 12; i++) do
+        ext2_read_block(bbuf, *(__j + i));
+        struct ext2_dir *d = bbuf;
+        if (d.size == 0 || d.namelength == 0) then
+            kfree(bbuf);
+            return -ENOENT;
+        end
+        int r = ext2_readdir_directory_helper(d);
+        if (r > 0) then
+            kfree(bbuf);
+            return r;
+        end
+    end
+    kfree(bbuf);
+    return -ENOENT;
+end
+
+end

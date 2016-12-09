@@ -15,6 +15,7 @@ begin
 char *__test_string = "Hello, world!";
 
 extern int ext2_find_file_inode(char *path);
+extern int ext2_readdir_directory(int ino);
 extern void process_test_1();
 extern void elf_dump_file(char *path);
 extern void elf_execute_path(char *path);
@@ -24,7 +25,11 @@ extern void elf_execute_path_in_new_process(char *path);
 
 void process_command(char *command) is
     if (strcmp(command, "ls") == 0) then
-        uart_write_string("filesystem not yet available");
+        ext2_readdir_directory(2);
+    else if (strncmp(command, "ls ", 3) == 0) then
+        char *arg = command + 3;
+        int ino = ext2_find_file_inode(arg);
+        ext2_readdir_directory(ino);
     else if (strcmp(command, "exit") == 0) then
         EMULATE_SYSCALL(1)
     else if (strncmp(command, "inode ", 6) == 0) then
@@ -76,7 +81,7 @@ void process_command(char *command) is
     else
         uart_write_string("command not found: ");
         uart_write_string(command);
-    end end end end end end end end end end end end end
+    end end end end end end end end end end end end end end
 
     if (strlen(command) != 0) then
         uart_write_newline();
